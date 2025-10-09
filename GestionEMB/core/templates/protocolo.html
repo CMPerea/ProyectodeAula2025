@@ -534,6 +534,8 @@
 
         <!-- Form Container -->
         <div class="form-container">
+            <!-- ARIA live region for notifications -->
+            <div id="notification" aria-live="polite" style="margin-bottom:1rem;color:#ef4444;font-weight:600;"></div>
             <form id="protocolForm" class="form-card">
                 <!-- Información Básica -->
                 <div class="form-section">
@@ -737,6 +739,9 @@
     </main>
 
     <script>
+        // Configuración
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
         // Character counter
         const tituloInput = document.getElementById('titulo');
         const tituloCounter = document.getElementById('tituloCounter');
@@ -774,13 +779,21 @@
 
         function handleFiles(files) {
             Array.from(files).forEach(file => {
-                if (file.size > 10 * 1024 * 1024) {
-                    alert(`El archivo ${file.name} excede el tamaño máximo de 10MB`);
+                if (file.size > MAX_FILE_SIZE) {
+                    showNotification(`El archivo ${file.name} excede el tamaño máximo de ${(MAX_FILE_SIZE / (1024 * 1024)).toFixed(0)}MB`);
                     return;
                 }
                 uploadedFiles.push(file);
                 addFileToList(file);
             });
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            setTimeout(() => {
+                notification.textContent = '';
+            }, 5000);
         }
 
         function addFileToList(file) {
@@ -826,12 +839,12 @@
             };
 
             console.log('Datos del protocolo:', formData);
-            alert('Protocolo creado exitosamente!\n\nConectar con Django para guardar en BD');
+            showNotification('Protocolo creado exitosamente! Conectar con Django para guardar en BD');
         });
 
         // Save draft
         document.getElementById('saveDraft').addEventListener('click', function() {
-            alert('Borrador guardado\nConectar con Django');
+            showNotification('Borrador guardado. Conectar con Django');
         });
     </script>
 </body>
