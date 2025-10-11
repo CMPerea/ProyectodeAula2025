@@ -78,10 +78,25 @@ Asegúrate de tener instalado:
 
 ## 🚀 Guía de Instalación y Ejecución  
 
-### 1️⃣ Clonar el repositorio  
+### Clonar el repositorio  
 ```bash
 git clone https://github.com/tu_usuario/GestionEMB.git
 cd GestionEMB
+
+---
+
+### Crear entorno virtual
+```bash
+python -m venv venv
+venv\Scripts\Activate.ps1
+
+---
+
+### Instalar Dependencias
+```bash
+pip install -r requirements.txt
+
+---
 
 
 
