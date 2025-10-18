@@ -22,12 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 import os
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-1234567890abcdefghijklmnopqrstuv')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
-    raise ValueError("The SECRET_KEY environment variable is not set.")
+DEBUG = True
+
+
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -55,11 +58,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'GestionEMB.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates')],
+        'DIRS': [BASE_DIR / 'core' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +73,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core', 'static')]
