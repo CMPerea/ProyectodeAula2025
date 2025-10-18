@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organismos - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title h1 {
+            color: #525252;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .btn-new {
+            padding: 0.75rem 1.5rem;
+            background: #0077B6;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-new:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.purple { background: #e9d5ff; }
+        .stat-icon.green { background: #d1fae5; }
+        .stat-icon.orange { background: #fed7aa; }
+        .stat-icon.blue { background: #e6f3f9; }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #525252;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .filters-section {
+            background: #FFFFFF;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filters-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 0.65rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .btn-filter {
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filter.primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-filter.primary:hover {
+            background: #006399;
+        }
+
+        .btn-filter.secondary {
+            background: #f3f4f6;
+            color: #525252;
+        }
+
+        .btn-filter.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: #f3f4f6;
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        .view-btn.active {
+            background: #FFFFFF;
+            color: #0077B6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .organisms-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .container-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container-info {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .container-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-export {
+            padding: 0.6rem 1rem;
+            background: #f3f4f6;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #525252;
+        }
+
+        .btn-export:hover {
+            background: #e5e7eb;
+        }
+
+        /* Grid View */
+        .organisms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .organism-card {
+            background: #FFFFFF;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .organism-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 119, 182, 0.15);
+            border-color: #0077B6;
+        }
+
+        .organism-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #e9d5ff, #c4b5fd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .organism-image.actinobacteria {
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+        }
+
+        .organism-image.levaduras {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .organism-image.hongos {
+            background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+        }
+
+        .organism-body {
+            padding: 1.25rem;
+        }
+
+        .organism-header {
+            margin-bottom: 1rem;
+        }
+
+        .organism-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .organism-code {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .organism-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .type-badge {
+            display: inline-flex;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .type-badge.actinobacteria {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .type-badge.levaduras {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .type-badge.hongos {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .organism-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .organism-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        .btn-action.view {
+            background: #e6f3f9;
+            color: #0077B6;
+        }
+
+        .btn-action.view:hover {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-action.edit {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .btn-action.edit:hover {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-action.delete {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .btn-action.delete:hover {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .organism-date {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* Table View */
+        .organisms-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .organisms-table thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .organisms-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #525252;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .organisms-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        .organisms-table tbody tr {
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .organisms-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .organism-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .organism-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #e9d5ff, #c4b5fd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .organism-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0077B6;
+            margin-bottom: 0.25rem;
+        }
+
+        .organism-info p {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .pagination {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-info {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-page {
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid #e5e7eb;
+            background: #FFFFFF;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .btn-page:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-page.active {
+            background: #0077B6;
+            color: #FFFFFF;
+            border-color: #0077B6;
+        }
+
+        .btn-page:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            .organisms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item active">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="#" class="nav-item">📁 Archivos</a>
+        <a href="#" class="nav-item">👥 Usuarios</a>
+        <a href="#" class="nav-item">🔍 Auditoría</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Gestión de Organismos</h1>
+            </div>
+            <button class="btn-new" onclick="crearOrganismo()">
+                ➕ Nuevo Organismo
+            </button>
+        </div>
+
+        <div class="content-area">
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon purple">🧫</div>
+                    <div class="stat-info">
+                        <div class="stat-value">187</div>
+                        <div class="stat-label">Total Organismos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">🦠</div>
+                    <div class="stat-info">
+                        <div class="stat-value">142</div>
+                        <div class="stat-label">Actinobacterias</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">🍄</div>
+                    <div class="stat-info">
+                        <div class="stat-value">28</div>
+                        <div class="stat-label">Levaduras</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">🌿</div>
+                    <div class="stat-info">
+                        <div class="stat-value">17</div>
+                        <div class="stat-label">Hongos Filamentosos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filters-header">
+                    <h3 class="filters-title">Filtros de Búsqueda</h3>
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="cambiarVista('grid')">🔲 Cuadrícula</button>
+                        <button class="view-btn" onclick="cambiarVista('table')">📊 Tabla</button>
+                    </div>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Buscar</label>
+                        <input type="text" class="filter-input" id="searchInput" placeholder="Nombre científico, código, cepa...">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Tipo</label>
+                        <select class="filter-select" id="typeFilter">
+                            <option value="">Todos los tipos</option>
+                            <option value="actinobacteria">Actinobacterias</option>
+                            <option value="levaduras">Levaduras</option>
+                            <option value="hongos">Hongos Filamentosos</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Origen</label>
+                        <select class="filter-select" id="originFilter">
+                            <option value="">Todos los orígenes</option>
+                            <option value="cacao">Cacao</option>
+                            <option value="suelo">Suelo Rizosférico</option>
+                            <option value="fruto">Fruto</option>
+                            <option value="hojas">Hojas</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Año Aislamiento</label>
+                        <select class="filter-select" id="yearFilter">
+                            <option value="">Todos los años</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions" style="margin-top: 1rem;">
+                    <button class="btn-filter primary" onclick="aplicarFiltros()">Buscar</button>
+                    <button class="btn-filter secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+                </div>
+            </div>
+
+            <!-- Organisms Container -->
+            <div class="organisms-container">
+                <div class="container-header">
+                    <div class="container-info">
+                        Mostrando <strong id="itemsShown">12</strong> de <strong id="totalItems">187</strong> organismos
+                    </div>
+                    <div class="container-actions">
+                        <button class="btn-export" onclick="exportarExcel()">📊 Exportar Excel</button>
+                        <button class="btn-export" onclick="exportarPDF()">📄 Exportar PDF</button>
+                    </div>
+                </div>
+
+                <!-- Grid View -->
+                <div class="organisms-grid" id="gridView">
+                    <!-- Organismo 1 -->
+                    <div class="organism-card" onclick="verDetalle(1)">
+                        <div class="organism-image actinobacteria">
+                            🦠
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Streptomyces sp.</h3>
+                                <div class="organism-code">EMB-001</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge actinobacteria">Actinobacteria</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Suelo Rizosférico de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 15/03/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 2 días</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(1)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(1)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(1)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 2 -->
+                    <div class="organism-card" onclick="verDetalle(2)">
+                        <div class="organism-image levaduras">
+                            🍄
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Saccharomyces cerevisiae</h3>
+                                <div class="organism-code">EMB-045</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge levaduras">Levadura</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Fermentación de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 20/04/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 5 días</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(2)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(2)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(2)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 3 -->
+                    <div class="organism-card" onclick="verDetalle(3)">
+                        <div class="organism-image hongos">
+                            🌿
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Trichoderma harzianum</h3>
+                                <div class="organism-code">EMB-102</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge hongos">Hongo Filamentoso</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Suelo de Cultivo
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 10/05/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 1 semana</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(3)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(3)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(3)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 4 -->
+                    <div class="organism-card" onclick="verDetalle(4)">
+                        <div class="organism-image actinobacteria">
+                            🦠
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Actinomyces viscosus</h3>
+                                <div class="organism-code">EMB-078</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge actinobacteria">Actinobacteria</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Hojas de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 25/06/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 3 días</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(4)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(4)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(4)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 5 -->
+                    <div class="organism-card" onclick="verDetalle(5)">
+                        <div class="organism-image levaduras">
+                            🍄
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Candida tropicalis</h3>
+                                <div class="organism-code">EMB-089</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge levaduras">Levadura</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Fruto de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 12/07/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 1 día</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(5)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(5)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(5)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 6 -->
+                    <div class="organism-card" onclick="verDetalle(6)">
+                        <div class="organism-image actinobacteria">
+                            🦠
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Nocardia brasiliensis</h3>
+                                <div class="organism-code">EMB-134</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge actinobacteria">Actinobacteria</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Suelo Rizosférico
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 30/08/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 4 horas</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(6)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(6)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(6)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 7 -->
+                    <div class="organism-card" onclick="verDetalle(7)">
+                        <div class="organism-image hongos">
+                            🌿
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Aspergillus niger</h3>
+                                <div class="organism-code">EMB-156</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge hongos">Hongo Filamentoso</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Fermentación
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 05/09/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 6 días</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(7)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(7)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(7)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 8 -->
+                    <div class="organism-card" onclick="verDetalle(8)">
+                        <div class="organism-image actinobacteria">
+                            🦠
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Micromonospora sp.</h3>
+                                <div class="organism-code">EMB-167</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge actinobacteria">Actinobacteria</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Suelo de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 15/09/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 2 horas</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(8)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(8)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(8)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 9 -->
+                    <div class="organism-card" onclick="verDetalle(9)">
+                        <div class="organism-image hongos">
+                            🌿
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Penicillium chrysogenum</h3>
+                                <div class="organism-code">EMB-173</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge hongos">Hongo Filamentoso</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Hojas Secas
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 22/09/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hoy</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(9)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(9)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(9)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 10 -->
+                    <div class="organism-card" onclick="verDetalle(10)">
+                        <div class="organism-image levaduras">
+                            🍄
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Pichia kudriavzevii</h3>
+                                <div class="organism-code">EMB-180</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge levaduras">Levadura</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Mazorca de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 28/09/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 1 hora</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(10)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(10)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(10)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 11 -->
+                    <div class="organism-card" onclick="verDetalle(11)">
+                        <div class="organism-image actinobacteria">
+                            🦠
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Rhodococcus erythropolis</h3>
+                                <div class="organism-code">EMB-185</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge actinobacteria">Actinobacteria</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Raíces de Cacao
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 01/10/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 30 min</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(11)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(11)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(11)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organismo 12 -->
+                    <div class="organism-card" onclick="verDetalle(12)">
+                        <div class="organism-image hongos">
+                            🌿
+                        </div>
+                        <div class="organism-body">
+                            <div class="organism-header">
+                                <h3 class="organism-title">Fusarium oxysporum</h3>
+                                <div class="organism-code">EMB-187</div>
+                            </div>
+                            <div class="organism-meta">
+                                <div class="meta-row">
+                                    <span class="type-badge hongos">Hongo Filamentoso</span>
+                                </div>
+                                <div class="meta-row">
+                                    📍 Origen: Suelo Contaminado
+                                </div>
+                                <div class="meta-row">
+                                    📅 Aislamiento: 03/10/2024
+                                </div>
+                            </div>
+                            <div class="organism-footer">
+                                <div class="organism-date">Actualizado hace 15 min</div>
+                                <div class="organism-actions">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(12)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarOrganismo(12)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarOrganismo(12)">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table View (Hidden by default) -->
+                <div class="hidden" id="tableView">
+                    <table class="organisms-table">
+                        <thead>
+                            <tr>
+                                <th>Organismo</th>
+                                <th>Código</th>
+                                <th>Tipo</th>
+                                <th>Origen</th>
+                                <th>Fecha Aislamiento</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="verDetalle(1)">
+                                <td>
+                                    <div class="organism-cell">
+                                        <div class="organism-thumb actinobacteria">🦠</div>
+                                        <div class="organism-info">
+                                            <h4>Streptomyces sp.</h4>
+                                            <p>Actinobacteria</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><strong>EMB-001</strong></td>
+                                <td><span class="type-badge actinobacteria">Actinobacteria</span></td>
+                                <td>Suelo Rizosférico</td>
+                                <td>15/03/2024</td>
+                                <td>
+                                    <div class="organism-actions">
+                                        <button class="btn-action view" onclick="event.stopPropagation(); verDetalle(1)">👁️</button>
+                                        <button class="btn-action edit" onclick="event.stopPropagation(); editarOrganismo(1)">✏️</button>
+                                        <button class="btn-action delete" onclick="event.stopPropagation(); eliminarOrganismo(1)">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="verDetalle(2)">
+                                <td>
+                                    <div class="organism-cell">
+                                        <div class="organism-thumb levaduras">🍄</div>
+                                        <div class="organism-info">
+                                            <h4>Saccharomyces cerevisiae</h4>
+                                            <p>Levadura</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><strong>EMB-045</strong></td>
+                                <td><span class="type-badge levaduras">Levadura</span></td>
+                                <td>Fermentación</td>
+                                <td>20/04/2024</td>
+                                <td>
+                                    <div class="organism-actions">
+                                        <button class="btn-action view" onclick="event.stopPropagation(); verDetalle(2)">👁️</button>
+                                        <button class="btn-action edit" onclick="event.stopPropagation(); editarOrganismo(2)">✏️</button>
+                                        <button class="btn-action delete" onclick="event.stopPropagation(); eliminarOrganismo(2)">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="verDetalle(3)">
+                                <td>
+                                    <div class="organism-cell">
+                                        <div class="organism-thumb hongos">🌿</div>
+                                        <div class="organism-info">
+                                            <h4>Trichoderma harzianum</h4>
+                                            <p>Hongo Filamentoso</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><strong>EMB-102</strong></td>
+                                <td><span class="type-badge hongos">Hongo Filamentoso</span></td>
+                                <td>Suelo de Cultivo</td>
+                                <td>10/05/2024</td>
+                                <td>
+                                    <div class="organism-actions">
+                                        <button class="btn-action view" onclick="event.stopPropagation(); verDetalle(3)">👁️</button>
+                                        <button class="btn-action edit" onclick="event.stopPropagation(); editarOrganismo(3)">✏️</button>
+                                        <button class="btn-action delete" onclick="event.stopPropagation(); eliminarOrganismo(3)">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Página <strong>1</strong> de <strong>16</strong>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn-page" disabled>‹</button>
+                        <button class="btn-page active">1</button>
+                        <button class="btn-page">2</button>
+                        <button class="btn-page">3</button>
+                        <button class="btn-page">4</button>
+                        <button class="btn-page">5</button>
+                        <button class="btn-page">›</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // View toggle
+        function cambiarVista(vista) {
+            const gridView = document.getElementById('gridView');
+            const tableView = document.getElementById('tableView');
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (vista === 'grid') {
+                gridView.classList.remove('hidden');
+                tableView.classList.add('hidden');
+                buttons[0].classList.add('active');
+            } else {
+                gridView.classList.add('hidden');
+                tableView.classList.remove('hidden');
+                buttons[1].classList.add('active');
+            }
+        }
+
+        // Crear organismo
+        function crearOrganismo() {
+            window.location.href = '/organismos/crear';
+        }
+
+        // Ver detalle
+        function verDetalle(id) {
+            window.location.href = `/organismos/detalle/${id}`;
+        }
+
+        // Editar organismo
+        function editarOrganismo(id) {
+            window.location.href = `/organismos/editar/${id}`;
+        }
+
+        // Eliminar organismo
+        function eliminarOrganismo(id) {
+            if (confirm('¿Está seguro de eliminar este organismo?\n\nEsta acción no se puede deshacer y se eliminará toda la información asociada.')) {
+                console.log('Eliminando organismo ID:', id);
+                alert('Organismo eliminado\nConectar con Django para eliminar de BD');
+            }
+        }
+
+        // Aplicar filtros
+        function aplicarFiltros() {
+            const search = document.getElementById('searchInput').value;
+            const type = document.getElementById('typeFilter').value;
+            const origin = document.getElementById('originFilter').value;
+            const year = document.getElementById('yearFilter').value;
+            
+            console.log('Filtros aplicados:', { search, type, origin, year });
+            alert('Aplicando filtros...\nConectar con Django para filtrar resultados');
+        }
+
+        // Limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('originFilter').value = '';
+            document.getElementById('yearFilter').value = '';
+            alert('Filtros limpiados');
+        }
+
+        // Exportar Excel
+        function exportarExcel() {
+            alert('Generando archivo Excel...\nConectar con biblioteca como openpyxl o pandas');
+        }
+
+        // Exportar PDF
+        function exportarPDF() {
+            alert('Generando archivo PDF...\nConectar con biblioteca como ReportLab');
+        }
+
+        // Búsqueda en tiempo real
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Buscando:', searchTerm);
+            // Implementar búsqueda en tiempo real si es necesario
+        });
+    </script>
+</body>
+</html>

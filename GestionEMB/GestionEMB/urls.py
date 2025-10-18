@@ -23,4 +23,12 @@ urlpatterns = [
     path('', views.login_view, name='login'),
     path('dashboard/', views.homepage_view, name='dashboard'),
     path('protocolo/', views.protocolo_view, name='protocolo'),
+    ##Gestion de Organismos
+    path('crear_organismo/', views.crear_organismo_view, name='crear_organismo'),
+    path('editar_organismo/<int:organismo_id>/', views.editar_organismo_view, name='editar_organismo'),
+    path('listar_organismos/', views.listar_organismos_view, name='listar_organismos'),
+    path('detalle_organismo/<int:organismo_id>/', views.detalle_organismo_view, name='detalle_organismo'),  
+    
+    ###Gestion de Protocolos
+
 ]
