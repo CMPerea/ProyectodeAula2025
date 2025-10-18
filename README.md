@@ -94,9 +94,21 @@ venv\Scripts\Activate.ps1
 
 ### Instalar Dependencias
 ```bash
-pip install -r requirements.txt
+pip install django mysqlclient
 
 ---
 
+Aplicar migraciones iniciales
+
+python manage.py makemigrations
+python manage.py migrate
+
+---
+
+Ejecutar el servidor de desarrollo
+
+python manage.py runserver
+
+---
 
 
