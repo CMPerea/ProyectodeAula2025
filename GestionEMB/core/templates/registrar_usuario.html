@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Usuario - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        /* Sidebar (simplificada) */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            padding: 2rem;
+            background: #FFFFFF;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .page-header h1 {
+            color: #525252;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+
+        /* Form Container */
+        .form-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem 2rem;
+        }
+
+        .form-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #525252;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        /* Form Groups */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            color: #525252;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-hint {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-top: -0.25rem;
+        }
+
+        /* Input Styles */
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #FFFFFF;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-textarea.large {
+            min-height: 300px;
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        /* Character Counter */
+        .char-counter {
+            text-align: right;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Password Strength */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .strength-text {
+            font-size: 0.8rem;
+        }
+
+        .strength-weak {
+            background-color: #ef4444;
+            width: 25%;
+        }
+
+        .strength-fair {
+            background-color: #f59e0b;
+            width: 50%;
+        }
+
+        .strength-good {
+            background-color: #10b981;
+            width: 75%;
+        }
+
+        .strength-strong {
+            background-color: #0077B6;
+            width: 100%;
+        }
+
+        /* Estado Badge */
+        .status-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .status-option {
+            position: relative;
+        }
+
+        .status-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .status-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .status-option input[type="radio"]:checked + .status-label {
+            border-color: #0077B6;
+            background: #e6f3f9;
+        }
+
+        .status-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-name {
+            font-weight: 600;
+            color: #525252;
+            margin-bottom: 0.25rem;
+        }
+
+        .status-desc {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #0077B6;
+            background: #f8fbfd;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #0077B6;
+            background: #e6f3f9;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #9ca3af;
+        }
+
+        .upload-text h3 {
+            color: #525252;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text p {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* File List */
+        .file-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+        }
+
+        .file-details h4 {
+            color: #525252;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-details p {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .file-remove {
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .file-remove:hover {
+            background: #fee2e2;
+        }
+
+        /* Permisos Grid */
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .permission-item:hover {
+            border-color: #0077B6;
+            background: #f8fbfd;
+        }
+
+        .permission-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #0077B6;
+        }
+
+        .permission-label {
+            font-size: 0.9rem;
+            color: #525252;
+            cursor: pointer;
+        }
+
+        .permission-desc {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            padding: 1.5rem 2rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #0077B6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="#" class="nav-item active">👥 Usuarios</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Administración</a>
+                <span>/</span>
+                <a href="#">Usuarios</a>
+                <span>/</span>
+                <span>Nuevo Usuario</span>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Crear Nuevo Usuario</h1>
+            <p>Complete todos los campos requeridos para registrar un nuevo usuario en el sistema</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form id="userForm" class="form-card">
+                <!-- Información Personal -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">👤</span>
+                        Información Personal
+                    </h2>
+
+                    <div class="info-box">
+                        <p><strong>Nota:</strong> Los campos marcados con <span class="required">*</span> son obligatorios. Asegúrese de proporcionar información precisa y actualizada.</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Nombre <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="nombre"
+                                name="nombre"
+                                maxlength="50"
+                                placeholder="Ej: Carlos"
+                                required
+                            >
+                            <div class="char-counter">
+                                <span id="nombreCounter">0</span> / 50 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Apellidos <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="apellidos"
+                                name="apellidos"
+                                maxlength="50"
+                                placeholder="Ej: Perea García"
+                                required
+                            >
+                            <div class="char-counter">
+                                <span id="apellidosCounter">0</span> / 50 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Correo Electrónico <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="email" 
+                                class="form-input" 
+                                id="email"
+                                name="email"
+                                placeholder="Ej: usuario@emb.com"
+                                required
+                            >
+                            <p class="form-hint">El usuario recibirá un correo de bienvenida en esta dirección</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Teléfono
+                            </label>
+                            <input 
+                                type="tel" 
+                                class="form-input" 
+                                id="telefono"
+                                name="telefono"
+                                placeholder="Ej: +57 300 123 4567"
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Foto de Perfil
+                            </label>
+                            <div class="file-upload-area" id="dropZone">
+                                <div class="upload-icon">📷</div>
+                                <div class="upload-text">
+                                    <h3>Arrastra una imagen aquí o haz clic para seleccionar</h3>
+                                    <p>JPG, PNG (Máx. 5MB, Recomendado: 300x300px)</p>
+                                </div>
+                                <input type="file" id="fileInput" class="file-input" accept=".jpg,.jpeg,.png">
+                            </div>
+                            <div class="file-list" id="fileList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Laboral -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">💼</span>
+                        Información Laboral
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                ID de Empleado <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="idEmpleado"
+                                name="id_empleado"
+                                maxlength="20"
+                                placeholder="Ej: EMB-001"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Departamento <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="departamento" name="departamento_id" required>
+                                <option value="">Seleccione un departamento</option>
+                                <option value="1">Microbiología</option>
+                                <option value="2">Química</option>
+                                <option value="3">Investigación</option>
+                                <option value="4">Control de Calidad</option>
+                                <option value="5">Administración</option>
+                                <option value="6">Dirección</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Cargo <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="cargo"
+                                name="cargo"
+                                maxlength="50"
+                                placeholder="Ej: Investigador Principal"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Fecha de Ingreso <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                class="form-input" 
+                                id="fechaIngreso"
+                                name="fecha_ingreso"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credenciales de Acceso -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🔐</span>
+                        Credenciales de Acceso
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Nombre de Usuario <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="username"
+                                name="username"
+                                maxlength="30"
+                                placeholder="Ej: cperea"
+                                required
+                            >
+                            <div class="char-counter">
+                                <span id="usernameCounter">0</span> / 30 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Contraseña <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-input" 
+                                id="password"
+                                name="password"
+                                placeholder="Mínimo 8 caracteres"
+                                required
+                            >
+                            <div class="password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill" id="passwordStrengthBar"></div>
+                                </div>
+                                <div class="strength-text" id="passwordStrengthText">Seguridad de la contraseña</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Confirmar Contraseña <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="password" 
+                                class="form-input" 
+                                id="confirmPassword"
+                                name="confirm_password"
+                                placeholder="Repita la contraseña"
+                                required
+                            >
+                            <div class="form-hint" id="passwordMatchText"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rol y Permisos -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">👑</span>
+                        Rol y Permisos
+                    </h2>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Seleccione el Rol <span class="required">*</span>
+                        </label>
+                        <div class="status-selector">
+                            <div class="status-option">
+                                <input type="radio" id="admin" name="rol" value="admin">
+                                <label for="admin" class="status-label">
+                                    <div class="status-icon">👑</div>
+                                    <div class="status-name">Administrador</div>
+                                    <div class="status-desc">Acceso completo al sistema</div>
+                                </label>
+                            </div>
+
+                            <div class="status-option">
+                                <input type="radio" id="editor" name="rol" value="editor">
+                                <label for="editor" class="status-label">
+                                    <div class="status-icon">✏️</div>
+                                    <div class="status-name">Editor</div>
+                                    <div class="status-desc">Puede crear y modificar contenido</div>
+                                </label>
+                            </div>
+
+                            <div class="status-option">
+                                <input type="radio" id="usuario" name="rol" value="usuario" checked>
+                                <label for="usuario" class="status-label">
+                                    <div class="status-icon">👤</div>
+                                    <div class="status-name">Usuario</div>
+                                    <div class="status-desc">Acceso básico para consultas</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Permisos Especiales</label>
+                        <div class="permissions-grid" id="permissionsGrid">
+                            <div class="permission-item">
+                                <input type="checkbox" id="permiso_protocolos" class="permission-checkbox" name="permisos" value="protocol_creation">
+                                <div>
+                                    <label for="permiso_protocolos" class="permission-label">Crear Protocolos</label>
+                                    <div class="permission-desc">Permite crear nuevos protocolos de investigación</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="permiso_organismos" class="permission-checkbox" name="permisos" value="organism_management">
+                                <div>
+                                    <label for="permiso_organismos" class="permission-label">Gestionar Organismos</label>
+                                    <div class="permission-desc">Permite registrar y modificar organismos</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="permiso_equipos" class="permission-checkbox" name="permisos" value="equipment_maintenance">
+                                <div>
+                                    <label for="permiso_equipos" class="permission-label">Mantenimiento de Equipos</label>
+                                    <div class="permission-desc">Permite registrar mantenimiento de equipos</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="permiso_reportes" class="permission-checkbox" name="permisos" value="report_generation">
+                                <div>
+                                    <label for="permiso_reportes" class="permission-label">Generar Reportes</label>
+                                    <div class="permission-desc">Permite generar reportes del sistema</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="permiso_exportar" class="permission-checkbox" name="permisos" value="data_export">
+                                <div>
+                                    <label for="permiso_exportar" class="permission-label">Exportar Datos</label>
+                                    <div class="permission-desc">Permite exportar datos a diferentes formatos</div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <input type="checkbox" id="permiso_auditoria" class="permission-checkbox" name="permisos" value="audit_access">
+                                <div>
+                                    <label for="permiso_auditoria" class="permission-label">Acceso a Auditoría</label>
+                                    <div class="permission-desc">Permite ver registros de auditoría del sistema</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="form-hint">Los permisos especiales otorgan capacidades adicionales más allá del rol base</p>
+                    </div>
+                </div>
+
+                <!-- Estado del Usuario -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🏷️</span>
+                        Estado del Usuario
+                    </h2>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Seleccione el Estado <span class="required">*</span>
+                        </label>
+                        <div class="status-selector">
+                            <div class="status-option">
+                                <input type="radio" id="activo" name="estado" value="activo" checked>
+                                <label for="activo" class="status-label">
+                                    <div class="status-icon">✅</div>
+                                    <div class="status-name">Activo</div>
+                                    <div class="status-desc">Usuario activo en el sistema</div>
+                                </label>
+                            </div>
+
+                            <div class="status-option">
+                                <input type="radio" id="inactivo" name="estado" value="inactivo">
+                                <label for="inactivo" class="status-label">
+                                    <div class="status-icon">⏸️</div>
+                                    <div class="status-name">Inactivo</div>
+                                    <div class="status-desc">Usuario sin acceso temporal</div>
+                                </label>
+                            </div>
+
+                            <div class="status-option">
+                                <input type="radio" id="pendiente" name="estado" value="pendiente">
+                                <label for="pendiente" class="status-label">
+                                    <div class="status-icon">⏳</div>
+                                    <div class="status-name">Pendiente</div>
+                                    <div class="status-desc">Esperando activación</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="btnCancel">
+                        🗑️ Cancelar
+                    </button>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn btn-secondary" id="saveDraft">
+                            💾 Guardar Borrador
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            ✓ Crear Usuario
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Character counters
+        const nombreInput = document.getElementById('nombre');
+        const nombreCounter = document.getElementById('nombreCounter');
+        const apellidosInput = document.getElementById('apellidos');
+        const apellidosCounter = document.getElementById('apellidosCounter');
+        const usernameInput = document.getElementById('username');
+        const usernameCounter = document.getElementById('usernameCounter');
+
+        nombreInput.addEventListener('input', function() {
+            nombreCounter.textContent = this.value.length;
+        });
+
+        apellidosInput.addEventListener('input', function() {
+            apellidosCounter.textContent = this.value.length;
+        });
+
+        usernameInput.addEventListener('input', function() {
+            usernameCounter.textContent = this.value.length;
+        });
+
+        // Password strength
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const passwordStrengthBar = document.getElementById('passwordStrengthBar');
+        const passwordStrengthText = document.getElementById('passwordStrengthText');
+        const passwordMatchText = document.getElementById('passwordMatchText');
+
+        passwordInput.addEventListener('input', checkPasswordStrength);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+        function checkPasswordStrength() {
+            const password = passwordInput.value;
+            let strength = 0;
+            let text = '';
+
+            // Verificar longitud
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+
+            // Verificar caracteres diversos
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            // Actualizar barra y texto
+            passwordStrengthBar.className = 'strength-fill';
+            
+            if (password.length === 0) {
+                text = 'Seguridad de la contraseña';
+            } else if (strength <= 2) {
+                passwordStrengthBar.classList.add('strength-weak');
+                text = 'Débil';
+            } else if (strength <= 4) {
+                passwordStrengthBar.classList.add('strength-fair');
+                text = 'Aceptable';
+            } else if (strength <= 5) {
+                passwordStrengthBar.classList.add('strength-good');
+                text = 'Buena';
+            } else {
+                passwordStrengthBar.classList.add('strength-strong');
+                text = 'Excelente';
+            }
+
+            passwordStrengthText.textContent = text;
+        }
+
+        function checkPasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (confirmPassword.length === 0) {
+                passwordMatchText.textContent = '';
+            } else if (password === confirmPassword) {
+                passwordMatchText.textContent = 'Las contraseñas coinciden';
+                passwordMatchText.style.color = '#10b981';
+            } else {
+                passwordMatchText.textContent = 'Las contraseñas no coinciden';
+                passwordMatchText.style.color = '#ef4444';
+            }
+        }
+
+        // File upload
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        let uploadedFiles = [];
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`El archivo ${file.name} excede el tamaño máximo de 5MB`);
+                    return;
+                }
+                
+                if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+                    alert(`El archivo ${file.name} no es una imagen válida (solo JPG y PNG)`);
+                    return;
+                }
+                
+                uploadedFiles = [file]; // Solo permitir un archivo
+                addFileToList(file);
+            });
+        }
+
+        function addFileToList(file) {
+            fileList.innerHTML = '';
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <div class="file-icon">📷</div>
+                    <div class="file-details">
+                        <h4>${file.name}</h4>
+                        <p>${(file.size / 1024).toFixed(2)} KB</p>
+                    </div>
+                </div>
+                <button type="button" class="file-remove" onclick="removeFile('${file.name}')">✕</button>
+            `;
+            fileList.appendChild(fileItem);
+        }
+
+        function removeFile(fileName) {
+            uploadedFiles = uploadedFiles.filter(f => f.name !== fileName);
+            fileList.innerHTML = '';
+        }
+
+        // Form submission
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                apellidos: document.getElementById('apellidos').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+                id_empleado: document.getElementById('idEmpleado').value,
+                departamento_id: document.getElementById('departamento').value,
+                cargo: document.getElementById('cargo').value,
+                fecha_ingreso: document.getElementById('fechaIngreso').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                rol: document.querySelector('input[name="rol"]:checked').value,
+                estado: document.querySelector('input[name="estado"]:checked').value,
+                permisos: Array.from(document.querySelectorAll('input[name="permisos"]:checked')).map(cb => cb.value),
+                foto_perfil: uploadedFiles.length > 0 ? uploadedFiles[0].name : null
+            };
+
+            console.log('Datos del usuario:', formData);
+            alert('Usuario creado exitosamente!\n\nConectar con Django para guardar en BD');
+        });
+
+        // Save draft
+        document.getElementById('saveDraft').addEventListener('click', function() {
+            alert('Borrador guardado\nConectar con Django');
+        });
+
+        // Cancel button
+        document.getElementById('btnCancel').addEventListener('click', function() {
+            if (confirm('¿Está seguro de que desea cancelar? Se perderán todos los datos no guardados.')) {
+                window.history.back();
+            }
+        });
+
+        // Form validation
+        function validateForm() {
+            const nombre = document.getElementById('nombre').value;
+            const apellidos = document.getElementById('apellidos').value;
+            const email = document.getElementById('email').value;
+            const idEmpleado = document.getElementById('idEmpleado').value;
+            const departamento = document.getElementById('departamento').value;
+            const cargo = document.getElementById('cargo').value;
+            const fechaIngreso = document.getElementById('fechaIngreso').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validar campos obligatorios
+            if (!nombre || !apellidos || !email || !idEmpleado || !departamento || !cargo || !fechaIngreso || !username || !password || !confirmPassword) {
+                alert('Por favor, complete todos los campos obligatorios.');
+                return false;
+            }
+
+            // Validar formato de email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Por favor, introduzca una dirección de correo electrónico válida.');
+                return false;
+            }
+
+            // Validar coincidencia de contraseñas
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden. Por favor, verifique.');
+                return false;
+            }
+
+            // Validar fortaleza de contraseña
+            if (password.length < 8) {
+                alert('La contraseña debe tener al menos 8 caracteres.');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

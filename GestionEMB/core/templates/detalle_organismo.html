@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Organismo - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #006399;
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        /* Header Card */
+        .header-card {
+            background: linear-gradient(135deg, #0077B6, #00A8E8);
+            color: #FFFFFF;
+            padding: 2.5rem 2rem;
+            margin: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .organism-type {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .organism-name {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+
+        .organism-code {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .organism-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .qr-placeholder {
+            width: 100px;
+            height: 100px;
+            background: #FFFFFF;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #525252;
+            text-align: center;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 0 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #525252;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        /* Taxonomy Table */
+        .taxonomy-table {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 1rem;
+        }
+
+        .taxonomy-label {
+            font-weight: 600;
+            color: #555555;
+        }
+
+        .taxonomy-value {
+            color: #525252;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #525252;
+            font-weight: 500;
+        }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 1rem 0.75rem 0.75rem;
+            color: #FFFFFF;
+            font-size: 0.85rem;
+        }
+
+        /* Sidebar Info */
+        .sidebar-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #525252;
+            margin-bottom: 1rem;
+        }
+
+        /* Quick Info */
+        .quick-info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quick-info-item {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .quick-info-icon {
+            width: 32px;
+            height: 32px;
+            background: #e6f3f9;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .quick-info-content {
+            flex: 1;
+        }
+
+        .quick-info-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+        }
+
+        .quick-info-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        /* Protocol List */
+        .protocol-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .protocol-item {
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 3px solid #0077B6;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .protocol-item:hover {
+            background: #f3f4f6;
+        }
+
+        .protocol-name {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 500;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -1.6rem;
+            width: 12px;
+            height: 12px;
+            background: #0077B6;
+            border-radius: 50%;
+            border: 3px solid #FFFFFF;
+            box-shadow: 0 0 0 2px #0077B6;
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-content {
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .info-grid,
+            .stats-grid,
+            .image-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .organism-name {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item active">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Organismos</a>
+                <span>/</span>
+                <span>Streptomyces coelicolor</span>
+            </div>
+            <div class="top-actions">
+                <button class="btn btn-secondary" onclick="exportarFicha()">📄 Exportar Ficha</button>
+                <button class="btn btn-primary" onclick="editarOrganismo()">✏️ Editar</button>
+            </div>
+        </div>
+
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="organism-type">🦠 Actinobacteria</div>
+                    <h1 class="organism-name">Streptomyces coelicolor</h1>
+                    <div class="organism-code">Código: ORG-EMB-001 | Cepa: EMB-ACT-001</div>
+                    
+                    <div class="organism-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Origen</div>
+                            <div class="meta-value">Suelo rizosférico de cacao</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Ubicación</div>
+                            <div class="meta-value">Apartadó, Antioquia</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Fecha Aislamiento</div>
+                            <div class="meta-value">15 Mar 2024</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Investigador</div>
+                            <div class="meta-value">Carlos Perea</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="qr-placeholder">
+                        QR Code<br>ORG-EMB-001
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div>
+                    <!-- Taxonomía -->
+                    <div class="info-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">🧬</span>
+                            Clasificación Taxonómica
+                        </h2>
+                        <div class="taxonomy-table">
+                            <div class="taxonomy-label">Reino:</div>
+                            <div class="taxonomy-value">Bacteria</div>
+                            
+                            <div class="taxonomy-label">Filo:</div>
+                            <div class="taxonomy-value">Actinobacteria</div>
+                            
+                            <div class="taxonomy-label">Clase:</div>
+                            <div class="taxonomy-value">Actinobacteria</div>
+                            
+                            <div class="taxonomy-label">Orden:</div>
+                            <div class="taxonomy-value">Streptomycetales</div>
+                            
+                            <div class="taxonomy-label">Familia:</div>
+                            <div class="taxonomy-value">Streptomycetaceae</div>
+                            
+                            <div class="taxonomy-label">Género:</div>
+                            <div class="taxonomy-value"><em>Streptomyces</em></div>
+                            
+                            <div class="taxonomy-label">Especie:</div>
+                            <div class="taxonomy-value"><em>S. coelicolor</em></div>
+                        </div>
+                    </div>
+
+                    <!-- Características Morfológicas -->
+                    <div class="info-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">🔬</span>
+                            Características Morfológicas
+                        </h2>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Color de Colonia</div>
+                                <div class="info-value">Gris oscuro con micelio aéreo blanco</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Forma</div>
+                                <div class="info-value">Circular</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Elevación</div>
+                                <div class="info-value">Elevada</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Borde</div>
+                                <div class="info-value">Entero</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Textura</div>
+                                <div class="info-value">Polvorienta con micelio aéreo</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Tinción Gram</div>
+                                <div class="info-value">Gram Positiva</div>
+                            </div>
+                            <div class="info-item full-width">
+                                <div class="info-label">Observaciones Microscópicas</div>
+                                <div class="info-value">Hifas ramificadas no septadas. Cadenas de esporas en espiral. Esporangios globosos con esporangióforos rectos. Presencia de micelio aéreo abundante.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Condiciones de Cultivo -->
+                    <div class="info-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">⚗️</span>
+                            Condiciones de Cultivo
+                        </h2>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Medio Óptimo</div>
+                                <div class="info-value">ISP-2 (Yeast Extract-Malt Extract Agar)</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Temperatura</div>
+                                <div class="info-value">28-30°C</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">pH Óptimo</div>
+                                <div class="info-value">7.0-7.5</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Tiempo Incubación</div>
+                                <div class="info-value">7-14 días</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Oxígeno</div>
+                                <div class="info-value">Aerobio</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Conservación</div>
+                                <div class="info-value">Glicerol 20% a -80°C</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Imágenes Microscópicas -->
+                    <div class="info-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">📸</span>
+                            Imágenes Microscópicas
+                        </h2>
+                        <div class="image-gallery">
+                            <div class="gallery-item" onclick="ampliarImagen(1)">
+                                <img src="https://via.placeholder.com/400x400/e6f3f9/0077B6?text=Colonia+Macroscópica" alt="Colonia macroscópica">
+                                <div class="gallery-caption">Colonia macroscópica en ISP-2 (7 días)</div>
+                            </div>
+                            <div class="gallery-item" onclick="ampliarImagen(2)">
+                                <img src="https://via.placeholder.com/400x400/e6f3f9/0077B6?text=Microscopía+40X" alt="Microscopía 40X">
+                                <div class="gallery-caption">Microscopía óptica 40X - Hifas</div>
+                            </div>
+                            <div class="gallery-item" onclick="ampliarImagen(3)">
+                                <img src="https://via.placeholder.com/400x400/e6f3f9/0077B6?text=Cadenas+Esporas" alt="Cadenas de esporas">
+                                <div class="gallery-caption">Cadenas de esporas en espiral</div>
+                            </div>
+                            <div class="gallery-item" onclick="ampliarImagen(4)">
+                                <img src="https://via.placeholder.com/400x400/e6f3f9/0077B6?text=Micelio+Aéreo" alt="Micelio aéreo">
+                                <div class="gallery-caption">Micelio aéreo abundante</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Propiedades y Notas -->
+                    <div class="info-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">📝</span>
+                            Propiedades y Observaciones
+                        </h2>
+                        <div class="info-item full-width" style="margin-bottom: 1.5rem;">
+                            <div class="info-label">Propiedades de Interés</div>
+                            <div class="info-value">Producción de compuestos con actividad antifúngica contra Moniliophthora roreri. Actividad quitinasa detectada. Potencial para biocontrol en cultivos de cacao.</div>
+                        </div>
+                        <div class="info-item full-width" style="margin-bottom: 1.5rem;">
+                            <div class="info-label">Referencias Bibliográficas</div>
+                            <div class="info-value">
+                                1. Kämpfer, P. (2012). Genus Streptomyces. Bergey's Manual of Systematic Bacteriology.<br>
+                                2. Goodfellow, M. et al. (2012). Biology and Biotechnology of Actinobacteria. Academic Press.
+                            </div>
+                        </div>
+                        <div class="info-item full-width">
+                            <div class="info-label">Notas Generales</div>
+                            <div class="info-value">Cepa muy promisoria para control biológico. Se recomienda subcultivo cada 30 días. Mantener stock de trabajo a 4°C y stock maestro a -80°C con glicerol 20%.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Sidebar -->
+                <div>
+                    <!-- Quick Info -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Información Rápida</h3>
+                        <div class="quick-info-list">
+                            <div class="quick-info-item">
+                                <div class="quick-info-icon">📅</div>
+                                <div class="quick-info-content">
+                                    <div class="quick-info-label">Registrado</div>
+                                    <div class="quick-info-value">10 Sep 2024</div>
+                                </div>
+                            </div>
+                            <div class="quick-info-item">
+                                <div class="quick-info-icon">🔄</div>
+                                <div class="quick-info-content">
+                                    <div class="quick-info-label">Última Actualización</div>
+                                    <div class="quick-info-value">10 Sep 2024 16:45</div>
+                                </div>
+                            </div>
+                            <div class="quick-info-item">
+                                <div class="quick-info-icon">👤</div>
+                                <div class="quick-info-content">
+                                    <div class="quick-info-label">Responsable</div>
+                                    <div class="quick-info-value">Carlos Perea</div>
+                                </div>
+                            </div>
+                            <div class="quick-info-item">
+                                <div class="quick-info-icon">✅</div>
+                                <div class="quick-info-content">
+                                    <div class="quick-info-label">Estado</div>
+                                    <div class="quick-info-value" style="color: #10b981;">Activo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Estadísticas de Uso</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">Protocolos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">8</div>
+                                <div class="stat-label">Subcultivos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Experimentos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">5</div>
+                                <div class="stat-label">Imágenes</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Protocolos Asociados -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Protocolos Asociados</h3>
+                        <div class="protocol-list">
+                            <div class="protocol-item" onclick="verProtocolo(1)">
+                                <div class="protocol-name">Aislamiento de Actinobacterias del Cacao</div>
+                            </div>
+                            <div class="protocol-item" onclick="verProtocolo(2)">
+                                <div class="protocol-name">Evaluación de Antagonismo in vitro</div>
+                            </div>
+                            <div class="protocol-item" onclick="verProtocolo(3)">
+                                <div class="protocol-name">Extracción de ADN por CTAB</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Historial de Actividad</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-date">10 Sep 2024</div>
+                                <div class="timeline-content">Actualización de información morfológica</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-date">28 Ago 2024</div>
+                                <div class="timeline-content">Subcultivo realizado - Stock actualizado</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-date">15 Ago 2024</div>
+                                <div class="timeline-content">Prueba de antagonismo completada</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-date">01 Ago 2024</div>
+                                <div class="timeline-content">Extracción de ADN realizada</div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-date">15 Mar 2024</div>
+                                <div class="timeline-content">Organismo registrado en el sistema</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones Rápidas -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Acciones</h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="duplicarOrganismo()">
+                                📋 Duplicar Registro
+                            </button>
+                            <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="descargarEtiqueta()">
+                                🏷️ Imprimir Etiqueta
+                            </button>
+                            <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="compartirOrganismo()">
+                                📤 Compartir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para ampliar imágenes -->
+    <div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="max-width: 90%; max-height: 90%; position: relative;">
+            <img id="modalImage" src="" style="max-width: 100%; max-height: 90vh; border-radius: 8px;">
+            <button onclick="cerrarModal()" style="position: absolute; top: -40px; right: 0; background: #FFFFFF; color: #525252; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.5rem;">×</button>
+        </div>
+    </div>
+
+    <script>
+        function editarOrganismo() {
+            window.location.href = '/organismos/editar/1';
+        }
+
+        function exportarFicha() {
+            alert('Exportar ficha técnica completa en PDF\nConectar con Django');
+        }
+
+        function ampliarImagen(id) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            
+            // Aquí iría la URL real de la imagen
+            modalImage.src = `https://via.placeholder.com/800x800/e6f3f9/0077B6?text=Imagen+Ampliada+${id}`;
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModal();
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModal();
+            }
+        });
+
+        function verProtocolo(id) {
+            window.location.href = `/protocolos/detalle/${id}`;
+        }
+
+        function duplicarOrganismo() {
+            if (confirm('¿Desea crear un nuevo registro basado en este organismo?')) {
+                alert('Duplicar organismo\nConectar con Django');
+            }
+        }
+
+        function descargarEtiqueta() {
+            alert('Generar etiqueta para crioviales/tubos\nConectar con Django para generar PDF');
+        }
+
+        function compartirOrganismo() {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Streptomyces coelicolor - ORG-EMB-001',
+                    text: 'Ficha técnica del organismo',
+                    url: url
+                });
+            } else {
+                navigator.clipboard.writeText(url);
+                alert('Enlace copiado al portapapeles');
+            }
+        }
+
+        // Imprimir ficha técnica
+        function imprimirFicha() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

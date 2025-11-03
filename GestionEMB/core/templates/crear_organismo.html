@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Organismo - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            padding: 2rem;
+            background: #FFFFFF;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .page-header h1 {
+            color: #525252;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+
+        /* Form Container */
+        .form-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem 2rem;
+        }
+
+        .form-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #525252;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-grid.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        /* Form Groups */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            color: #525252;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-hint {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-top: -0.25rem;
+        }
+
+        /* Input Styles */
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #FFFFFF;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #0077B6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Type Selector */
+        .type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .type-option {
+            position: relative;
+        }
+
+        .type-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .type-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #FFFFFF;
+        }
+
+        .type-option input[type="radio"]:checked + .type-label {
+            border-color: #0077B6;
+            background: #e6f3f9;
+        }
+
+        .type-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .type-name {
+            font-weight: 600;
+            color: #525252;
+            font-size: 0.95rem;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: #fafafa;
+        }
+
+        .image-upload-area:hover {
+            border-color: #0077B6;
+            background: #f8fbfd;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #9ca3af;
+        }
+
+        .upload-text h3 {
+            color: #525252;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text p {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .image-input {
+            display: none;
+        }
+
+        /* Image Preview Grid */
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+            aspect-ratio: 1;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 28px;
+            height: 28px;
+            background: #ef4444;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .preview-remove:hover {
+            background: #dc2626;
+        }
+
+        /* Color Picker */
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            border-color: #0077B6;
+            background: #f8fbfd;
+        }
+
+        .color-sample {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .color-name {
+            font-size: 0.85rem;
+            color: #525252;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            padding: 1.5rem 2rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid,
+            .form-grid.three-col {
+                grid-template-columns: 1fr;
+            }
+
+            .type-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item active">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Organismos</a>
+                <span>/</span>
+                <span>Nuevo Organismo</span>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Registrar Nuevo Organismo</h1>
+            <p>Complete la información taxonómica y características del microorganismo</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form id="organismForm" class="form-card">
+                <!-- Tipo de Organismo -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🧬</span>
+                        Tipo de Microorganismo
+                    </h2>
+
+                    <div class="info-box">
+                        <p><strong>Seleccione el tipo:</strong> Esta clasificación determinará los campos específicos que se mostrarán para la caracterización del organismo.</p>
+                    </div>
+
+                    <div class="type-selector">
+                        <div class="type-option">
+                            <input type="radio" id="actinobacteria" name="tipo" value="actinobacteria" checked>
+                            <label for="actinobacteria" class="type-label">
+                                <div class="type-icon">🧫</div>
+                                <div class="type-name">Actinobacteria</div>
+                            </label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="radio" id="levadura" name="tipo" value="levadura">
+                            <label for="levadura" class="type-label">
+                                <div class="type-icon">🔬</div>
+                                <div class="type-name">Levadura</div>
+                            </label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="radio" id="hongo" name="tipo" value="hongo_filamentoso">
+                            <label for="hongo" class="type-label">
+                                <div class="type-icon">🍄</div>
+                                <div class="type-name">Hongo Filamentoso</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Taxonómica -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">📊</span>
+                        Información Taxonómica
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Código de Identificación <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="codigo"
+                                name="codigo"
+                                placeholder="Ej: EMB-ACT-001"
+                                required
+                            >
+                            <p class="form-hint">Código único interno del laboratorio</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Nombre Científico <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="nombre_cientifico"
+                                name="nombre_cientifico"
+                                placeholder="Ej: Streptomyces sp."
+                                required
+                            >
+                            <p class="form-hint">Género y especie en nomenclatura binomial</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Cepa
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="cepa"
+                                name="cepa"
+                                placeholder="Ej: ATCC 12345"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Familia
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="familia"
+                                name="familia"
+                                placeholder="Ej: Streptomycetaceae"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Orden
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="orden"
+                                name="orden"
+                                placeholder="Ej: Actinomycetales"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Clase
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="clase"
+                                name="clase"
+                                placeholder="Ej: Actinobacteria"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Origen y Aislamiento -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🌍</span>
+                        Origen y Aislamiento
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Origen <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="origen" name="origen" required>
+                                <option value="">Seleccione el origen</option>
+                                <option value="suelo_rizosfera">Suelo Rizosférico</option>
+                                <option value="tejido_cacao">Tejido de Cacao</option>
+                                <option value="fruto_cacao">Fruto de Cacao</option>
+                                <option value="fermentacion">Fermentación</option>
+                                <option value="agua">Agua</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Fecha de Aislamiento
+                            </label>
+                            <input 
+                                type="date" 
+                                class="form-input" 
+                                id="fecha_aislamiento"
+                                name="fecha_aislamiento"
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Ubicación Geográfica
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="ubicacion"
+                                name="ubicacion"
+                                placeholder="Ej: Antioquia, Colombia - Plantación XYZ"
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Método de Aislamiento
+                            </label>
+                            <textarea 
+                                class="form-textarea" 
+                                id="metodo_aislamiento"
+                                name="metodo_aislamiento"
+                                placeholder="Describa brevemente el método utilizado para el aislamiento..."
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Características Morfológicas -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">👁️</span>
+                        Características Morfológicas
+                    </h2>
+
+                    <div class="form-grid three-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Forma de Colonia
+                            </label>
+                            <select class="form-select" id="forma_colonia" name="forma_colonia">
+                                <option value="">Seleccione</option>
+                                <option value="circular">Circular</option>
+                                <option value="irregular">Irregular</option>
+                                <option value="puntiforme">Puntiforme</option>
+                                <option value="rizoide">Rizoide</option>
+                                <option value="filamentosa">Filamentosa</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Elevación
+                            </label>
+                            <select class="form-select" id="elevacion" name="elevacion">
+                                <option value="">Seleccione</option>
+                                <option value="plana">Plana</option>
+                                <option value="elevada">Elevada</option>
+                                <option value="convexa">Convexa</option>
+                                <option value="umbonada">Umbonada</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Borde
+                            </label>
+                            <select class="form-select" id="borde" name="borde">
+                                <option value="">Seleccione</option>
+                                <option value="entero">Entero</option>
+                                <option value="ondulado">Ondulado</option>
+                                <option value="lobulado">Lobulado</option>
+                                <option value="irregular">Irregular</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Superficie
+                            </label>
+                            <select class="form-select" id="superficie" name="superficie">
+                                <option value="">Seleccione</option>
+                                <option value="lisa">Lisa</option>
+                                <option value="rugosa">Rugosa</option>
+                                <option value="mucosa">Mucosa</option>
+                                <option value="seca">Seca</option>
+                                <option value="polvorienta">Polvorienta</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Tamaño (mm)
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="tamano"
+                                name="tamano"
+                                placeholder="Ej: 2-5"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Color
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="color"
+                                name="color"
+                                placeholder="Ej: Blanco cremoso"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-grid single" style="margin-top: 1.5rem;">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Descripción Adicional
+                            </label>
+                            <textarea 
+                                class="form-textarea" 
+                                id="descripcion_morfologica"
+                                name="descripcion_morfologica"
+                                placeholder="Incluya observaciones adicionales: pigmentación, producción de esporas, micelio aéreo, etc."
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condiciones de Cultivo -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🧪</span>
+                        Condiciones de Cultivo
+                    </h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Medio de Cultivo Preferido
+                            </label>
+                            <select class="form-select" id="medio_cultivo" name="medio_cultivo">
+                                <option value="">Seleccione</option>
+                                <option value="pda">PDA (Papa Dextrosa Agar)</option>
+                                <option value="isp2">ISP-2</option>
+                                <option value="isp4">ISP-4</option>
+                                <option value="ypd">YPD</option>
+                                <option value="luria">Luria-Bertani (LB)</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Temperatura Óptima (°C)
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="temperatura"
+                                name="temperatura"
+                                placeholder="Ej: 28"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                pH Óptimo
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="ph"
+                                name="ph"
+                                placeholder="Ej: 7.0"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Tiempo de Crecimiento
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="tiempo_crecimiento"
+                                name="tiempo_crecimiento"
+                                placeholder="Ej: 7-14 días"
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Observaciones de Cultivo
+                            </label>
+                            <textarea 
+                                class="form-textarea" 
+                                id="observaciones_cultivo"
+                                name="observaciones_cultivo"
+                                placeholder="Incluya información sobre requerimientos especiales, sensibilidad a antibióticos, etc."
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imágenes Microscópicas -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🔬</span>
+                        Imágenes Microscópicas
+                    </h2>
+
+                    <div class="form-group">
+                        <label class="form-label">Adjuntar Imágenes</label>
+                        <div class="image-upload-area" id="imageDropZone">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-text">
+                                <h3>Arrastra imágenes aquí o haz clic para seleccionar</h3>
+                                <p>JPG, PNG (Máx. 5MB por imagen) - Imágenes microscópicas, colonias, etc.</p>
+                            </div>
+                            <input type="file" id="imageInput" class="image-input" multiple accept="image/*">
+                        </div>
+                        <div class="image-preview-grid" id="imagePreview"></div>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <span class="section-icon">📝</span>
+                        Información Adicional
+                    </h2>
+
+                    <div class="form-grid single">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Aplicaciones Potenciales
+                            </label>
+                            <textarea 
+                                class="form-textarea" 
+                                id="aplicaciones"
+                                name="aplicaciones"
+                                placeholder="Ej: Actividad antimicrobiana, producción de enzimas, biocont
