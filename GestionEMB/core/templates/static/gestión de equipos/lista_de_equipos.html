@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Equipos - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .content-area {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0077B6, #005a8f);
+            padding: 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #005a8f;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            background: #FFFFFF;
+            min-width: 180px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .equipment-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .equipment-image {
+            height: 180px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 3rem;
+        }
+
+        .equipment-content {
+            padding: 1.5rem;
+        }
+
+        .equipment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .equipment-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.25rem;
+        }
+
+        .equipment-model {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-badge.available {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.in-use {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.maintenance {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.out-of-service {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .equipment-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .detail-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        .equipment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .equipment-actions .btn {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #525252;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            background: #FFFFFF;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background: #f9fafb;
+        }
+
+        .pagination-btn.active {
+            background: #0077B6;
+            color: #FFFFFF;
+            border-color: #0077B6;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal de Eliminación */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #fef2f2;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: #fecaca;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #dc2626;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #991b1b;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-message {
+            color: #525252;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .equipment-info {
+            background: #f9fafb;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #ef4444;
+        }
+
+        .equipment-info-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.5rem;
+        }
+
+        .equipment-info-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .info-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .warning-box p {
+            color: #92400e;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+        }
+
+        .warning-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-actions .btn {
+            min-width: 120px;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .success-message p {
+            color: #065f46;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .equipment-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-filters {
+                flex-direction: column;
+            }
+            .search-box {
+                min-width: 100%;
+            }
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal-actions {
+                flex-direction: column;
+            }
+            .modal-actions .btn {
+                width: 100%;
+            }
+            .equipment-info-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item active">⚙️ Equipos</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Equipos</a>
+                <span>/</span>
+                <span>Lista de Equipos</span>
+            </div>
+            <div class="admin-badge">
+                👑 Modo Administrador
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-header">
+                <h1>Gestión de Equipos</h1>
+                <p>Administre y consulte todos los equipos disponibles en el laboratorio EM&B</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">⚙️</div>
+                        Lista de Equipos del Laboratorio
+                    </div>
+                    <button class="btn btn-primary" onclick="navigateTo('registrar-equipo')">
+                        ➕ Registrar Nuevo Equipo
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="search-filters">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="search-input" id="searchInput" placeholder="Buscar equipos por nombre, modelo o número de serie..." onkeyup="filterEquipment()">
+                        </div>
+                        <select class="filter-select" id="statusFilter" onchange="filterEquipment()">
+                            <option value="">Todos los estados</option>
+                            <option value="available">Disponible</option>
+                            <option value="in-use">En uso</option>
+                            <option value="maintenance">En mantenimiento</option>
+                            <option value="out-of-service">Fuera de servicio</option>
+                        </select>
+                        <select class="filter-select" id="categoryFilter" onchange="filterEquipment()">
+                            <option value="">Todas las categorías</option>
+                            <option value="incubator">Incubadoras</option>
+                            <option value="microscope">Microscopios</option>
+                            <option value="centrifuge">Centrífugas</option>
+                            <option value="spectrophotometer">Espectrofotómetros</option>
+                            <option value="autoclave">Autoclaves</option>
+                        </select>
+                    </div>
+
+                    <div class="equipment-grid" id="equipmentGrid">
+                        <!-- Los equipos se cargarán aquí dinámicamente -->
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                        <!-- La paginación se generará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Eliminación -->
+        <div class="modal-overlay" id="deleteModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="modal-icon">⚠️</div>
+                    <div class="modal-title">Confirmar Eliminación</div>
+                </div>
+                <div class="modal-body">
+                    <div class="success-message" id="successMessage">
+                        <p>✅ Equipo eliminado exitosamente.</p>
+                    </div>
+                    
+                    <div class="modal-message" id="modalMessage">
+                        ¿Está seguro de que desea eliminar permanentemente este equipo del sistema?
+                    </div>
+                    
+                    <div class="equipment-info" id="equipmentInfo">
+                        <!-- Información del equipo se cargará aquí -->
+                    </div>
+                    
+                    <div class="warning-box">
+                        <p>
+                            <span class="warning-icon">⚠️</span>
+                            <span>Esta acción no se puede deshacer. Todos los datos del equipo, incluyendo historial de mantenimiento y calibraciones, se eliminarán permanentemente.</span>
+                        </p>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeDeleteModal()">
+                            ✕ Cancelar
+                        </button>
+                        <button class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">
+                            🗑️ Eliminar Permanentemente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Datos de ejemplo para los equipos
+        const equipmentData = [
+            {
+                id: 1,
+                name: "Incubadora de CO₂",
+                model: "HERAcell 150i",
+                serialNumber: "IC-2023-001",
+                category: "incubator",
+                status: "available",
+                location: "Sala de Cultivos A",
+                specifications: "Temperatura: 5-50°C, CO₂: 0-20%",
+                nextMaintenance: "15/12/2024",
+                image: "🧫"
+            },
+            {
+                id: 2,
+                name: "Microscopio Invertido",
+                model: "Olympus IX73",
+                serialNumber: "MI-2022-015",
+                category: "microscope",
+                status: "in-use",
+                location: "Laboratorio Principal",
+                specifications: "Aumento: 4x-100x, Cámara: 5MP",
+                nextMaintenance: "10/11/2024",
+                image: "🔬"
+            },
+            {
+                id: 3,
+                name: "Centrífuga Refrigerada",
+                model: "Eppendorf 5430 R",
+                serialNumber: "CR-2021-008",
+                category: "centrifuge",
+                status: "maintenance",
+                location: "Sala de Procesamiento",
+                specifications: "Velocidad: 15,000 rpm, Temp: -9°C a 40°C",
+                nextMaintenance: "En curso",
+                image: "🌀"
+            },
+            {
+                id: 4,
+                name: "Espectrofotómetro UV-Vis",
+                model: "Thermo NanoDrop One",
+                serialNumber: "ES-2023-003",
+                category: "spectrophotometer",
+                status: "available",
+                location: "Laboratorio de Análisis",
+                specifications: "Rango: 190-850 nm, Muestra: 1-2 μL",
+                nextMaintenance: "20/01/2025",
+                image: "📊"
+            },
+            {
+                id: 5,
+                name: "Autoclave de Vapor",
+                model: "Tuttnauer 3870EA",
+                serialNumber: "AU-2020-012",
+                category: "autoclave",
+                status: "out-of-service",
+                location: "Sala de Esterilización",
+                specifications: "Capacidad: 55L, Temp: 105-135°C",
+                nextMaintenance: "Esperando repuestos",
+                image: "♨️"
+            },
+            {
+                id: 6,
+                name: "Agitador Orbital",
+                model: "New Brunswick Innova 42",
+                serialNumber: "AO-2022-007",
+                category: "incubator",
+                status: "available",
+                location: "Sala de Cultivos B",
+                specifications: "Velocidad: 25-500 rpm, Temp: Ambiente +5°C a 80°C",
+                nextMaintenance: "05/12/2024",
+                image: "🔄"
+            }
+        ];
+
+        // Variables para paginación y eliminación
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        let filteredEquipment = [...equipmentData];
+        let equipmentToDelete = null;
+
+        // Inicializar la lista de equipos
+        document.addEventListener('DOMContentLoaded', function() {
+            renderEquipment();
+            renderPagination();
+        });
+
+        // Función para renderizar los equipos
+        function renderEquipment() {
+            const equipmentGrid = document.getElementById('equipmentGrid');
+            
+            // Calcular índices para la página actual
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentEquipment = filteredEquipment.slice(startIndex, endIndex);
+            
+            if (currentEquipment.length === 0) {
+                equipmentGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">⚙️</div>
+                        <h3>No se encontraron equipos</h3>
+                        <p>No hay equipos que coincidan con los criterios de búsqueda.</p>
+                        <button class="btn btn-primary" onclick="clearFilters()">
+                            🔄 Limpiar filtros
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            equipmentGrid.innerHTML = currentEquipment.map(equipment => `
+                <div class="equipment-card">
+                    <div class="equipment-image">
+                        ${equipment.image}
+                    </div>
+                    <div class="equipment-content">
+                        <div class="equipment-header">
+                            <div>
+                                <div class="equipment-name">${equipment.name}</div>
+                                <div class="equipment-model">${equipment.model}</div>
+                            </div>
+                            <span class="status-badge ${equipment.status}">
+                                ${getStatusText(equipment.status)}
+                            </span>
+                        </div>
+                        <div class="equipment-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Número de Serie</span>
+                                <span class="detail-value">${equipment.serialNumber}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Ubicación</span>
+                                <span class="detail-value">${equipment.location}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Próximo Mantenimiento</span>
+                                <span class="detail-value">${equipment.nextMaintenance}</span>
+                            </div>
+                        </div>
+                        <div class="equipment-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewEquipment(${equipment.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="editEquipment(${equipment.id})">
+                                ✏️ Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${equipment.id})">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Función para renderizar la paginación
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredEquipment.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Botón anterior
+            paginationHTML += `
+                <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                    ← Anterior
+                </button>
+            `;
+            
+            // Números de página
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            // Botón siguiente
+            paginationHTML += `
+                <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                    Siguiente →
+                </button>
+            `;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // Función para cambiar de página
+        function changePage(page) {
+            currentPage = page;
+            renderEquipment();
+            renderPagination();
+        }
+
+        // Función para filtrar equipos
+        function filterEquipment() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            filteredEquipment = equipmentData.filter(equipment => {
+                const matchesSearch = 
+                    equipment.name.toLowerCase().includes(searchTerm) ||
+                    equipment.model.toLowerCase().includes(searchTerm) ||
+                    equipment.serialNumber.toLowerCase().includes(searchTerm);
+                
+                const matchesStatus = !statusFilter || equipment.status === statusFilter;
+                const matchesCategory = !categoryFilter || equipment.category === categoryFilter;
+                
+                return matchesSearch && matchesStatus && matchesCategory;
+            });
+            
+            currentPage = 1;
+            renderEquipment();
+            renderPagination();
+        }
+
+        // Función para limpiar filtros
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            filterEquipment();
+        }
+
+        // Función para obtener texto del estado
+        function getStatusText(status) {
+            const statusMap = {
+                'available': 'Disponible',
+                'in-use': 'En uso',
+                'maintenance': 'En mantenimiento',
+                'out-of-service': 'Fuera de servicio'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Función para abrir el modal de eliminación
+        function openDeleteModal(equipmentId) {
+            equipmentToDelete = equipmentData.find(e => e.id === equipmentId);
+            
+            if (!equipmentToDelete) return;
+            
+            // Configurar la información del equipo en el modal
+            document.getElementById('equipmentInfo').innerHTML = `
+                <div class="equipment-info-name">${equipmentToDelete.name}</div>
+                <div class="equipment-info-details">
+                    <div class="info-detail">
+                        <span class="info-label">Modelo</span>
+                        <span class="info-value">${equipmentToDelete.model}</span>
+                    </div>
+                    <div class="info-detail">
+                        <span class="info-label">Número de Serie</span>
+                        <span class="info-value">${equipmentToDelete.serialNumber}</span>
+                    </div>
+                    <div class="info-detail">
+                        <span class="info-label">Ubicación</span>
+                        <span class="info-value">${equipmentToDelete.location}</span>
+                    </div>
+                    <div class="info-detail">
+                        <span class="info-label">Estado</span>
+                        <span class="info-value">${getStatusText(equipmentToDelete.status)}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Mostrar el modal
+            document.getElementById('deleteModal').classList.add('active');
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('modalMessage').style.display = 'block';
+            document.getElementById('confirmDeleteBtn').disabled = false;
+            document.getElementById('confirmDeleteBtn').textContent = '🗑️ Eliminar Permanentemente';
+        }
+
+        // Función para cerrar el modal de eliminación
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            equipmentToDelete = null;
+        }
+
+        // Función para confirmar la eliminación
+        function confirmDelete() {
+            if (!equipmentToDelete) return;
+            
+            // Deshabilitar el botón para evitar múltiples clics
+            document.getElementById('confirmDeleteBtn').disabled = true;
+            document.getElementById('confirmDeleteBtn').textContent = '⏳ Eliminando...';
+            
+            // Simular proceso de eliminación
+            setTimeout(() => {
+                // En una implementación real, aquí se haría una llamada a la API para eliminar el equipo
+                
+                // Mostrar mensaje de éxito
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('modalMessage').style.display = 'none';
+                
+                // Actualizar el texto del botón
+                document.getElementById('confirmDeleteBtn').textContent = '✅ Hecho';
+                
+                // Cerrar el modal después de un tiempo
+                setTimeout(() => {
+                    // Eliminar el equipo de los datos (en una implementación real, esto se haría en el backend)
+                    const index = equipmentData.findIndex(e => e.id === equipmentToDelete.id);
+                    if (index !== -1) {
+                        equipmentData.splice(index, 1);
+                    }
+                    
+                    // Actualizar la lista
+                    filterEquipment();
+                    
+                    // Cerrar el modal
+                    closeDeleteModal();
+                }, 1500);
+            }, 1500);
+        }
+
+        // Funciones de navegación (simuladas)
+        function navigateTo(page) {
+            alert(`Navegando a: ${page}. En una implementación real, esto cargaría la página correspondiente.`);
+        }
+
+        function viewEquipment(id) {
+            alert(`Viendo detalles del equipo ID: ${id}. En una implementación real, esto abriría la página de detalles.`);
+        }
+
+        function editEquipment(id) {
+            alert(`Editando equipo ID: ${id}. En una implementación real, esto abriría el formulario de edición.`);
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('deleteModal').classList.contains('active')) {
+                closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+</html>

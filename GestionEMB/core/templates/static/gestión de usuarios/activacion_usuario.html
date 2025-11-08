@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desactivar/Reactivar Usuario - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        /* Sidebar (simplificada) */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            padding: 2rem;
+            background: #FFFFFF;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .page-header h1 {
+            color: #525252;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 119, 182, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.active { background: #d1fae5; color: #10b981; }
+        .stat-icon.inactive { background: #fee2e2; color: #ef4444; }
+        .stat-icon.total { background: #e6f3f9; color: #0077B6; }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #525252;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* User Management Card */
+        .user-management-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            color: #525252;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Filters */
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: #525252;
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        /* User List */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .user-item:hover {
+            border-color: #0077B6;
+            background: #f8fbfd;
+        }
+
+        .user-item.selected {
+            border-color: #0077B6;
+            background: #e6f3f9;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-avatar.active {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .user-avatar.inactive {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            color: #525252;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details {
+            display: flex;
+            gap: 1rem;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .user-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .user-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .role-admin {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .role-editor {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .role-user {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .user-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #0077B6;
+            flex-shrink: 0;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            display: none;
+            padding: 1rem 2rem;
+            background: #f8fbfd;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .bulk-actions.show {
+            display: flex;
+        }
+
+        .selected-count {
+            color: #525252;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            padding: 1.5rem 2rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .success-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #9ca3af;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filters-section {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .user-details {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .bulk-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="#" class="nav-item active">👥 Usuarios</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Administración</a>
+                <span>/</span>
+                <a href="#">Usuarios</a>
+                <span>/</span>
+                <span>Activar/Desactivar</span>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Activar y Desactivar Usuarios</h1>
+            <p>Gestionar el estado de acceso de los usuarios al sistema</p>
+        </div>
+
+        <!-- Content Container -->
+        <div class="content-container">
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon total">👥</div>
+                    </div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Usuarios Totales</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon active">✅</div>
+                    </div>
+                    <div class="stat-value" id="activeUsers">0</div>
+                    <div class="stat-label">Usuarios Activos</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon inactive">⏸️</div>
+                    </div>
+                    <div class="stat-value" id="inactiveUsers">0</div>
+                    <div class="stat-label">Usuarios Inactivos</div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✅</div>
+                <div>
+                    <strong>¡Éxito!</strong> Los estados de usuario han sido actualizados correctamente.
+                </div>
+            </div>
+
+            <!-- User Management Card -->
+            <div class="user-management-card">
+                <div class="card-header">
+                    <h2>
+                        <div class="card-icon">👥</div>
+                        Lista de Usuarios
+                    </h2>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="btnSelectAll">
+                            📋 Seleccionar Todos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card-body">
+                    <div class="filters-section">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">Todos los estados</option>
+                            <option value="active">Solo activos</option>
+                            <option value="inactive">Solo inactivos</option>
+                        </select>
+
+                        <select class="filter-select" id="roleFilter">
+                            <option value="">Todos los roles</option>
+                            <option value="admin">Administradores</option>
+                            <option value="editor">Editores</option>
+                            <option value="user">Usuarios</option>
+                        </select>
+
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInput" placeholder="Buscar usuarios...">
+                        </div>
+                    </div>
+
+                    <!-- Bulk Actions -->
+                    <div class="bulk-actions" id="bulkActions">
+                        <div class="selected-count" id="selectedCount">
+                            <span id="selectedNumber">0</span> usuarios seleccionados
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-success" id="btnActivateSelected">
+                                ✅ Activar Seleccionados
+                            </button>
+                            <button class="btn btn-warning" id="btnDeactivateSelected">
+                                ⏸️ Desactivar Seleccionados
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- User List -->
+                    <div class="user-list" id="userList">
+                        <!-- Los usuarios se cargarán dinámicamente con JavaScript -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <div class="empty-icon">👥</div>
+                        <h3>No se encontraron usuarios</h3>
+                        <p>Intente ajustar los filtros de búsqueda</p>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="btnCancel">
+                        🗑️ Cancelar
+                    </button>
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" id="btnDeselectAll">
+                            🔄 Limpiar Selección
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Datos de ejemplo (en una aplicación real, estos vendrían de una API)
+        const usersData = [
+            {
+                id: 1,
+                nombre: "Carlos",
+                apellidos: "Perea García",
+                email: "cperea@emb.com",
+                rol: "admin",
+                estado: "active",
+                id_empleado: "EMB-001",
+                departamento: "Investigación",
+                fecha_ingreso: "2023-01-15",
+                avatar_text: "CP"
+            },
+            {
+                id: 2,
+                nombre: "Gabriela",
+                apellidos: "Ramírez López",
+                email: "gramirez@emb.com",
+                rol: "editor",
+                estado: "active",
+                id_empleado: "EMB-002",
+                departamento: "Microbiología",
+                fecha_ingreso: "2023-02-20",
+                avatar_text: "GR"
+            },
+            {
+                id: 3,
+                nombre: "Sura",
+                apellidos: "Rueda Martínez",
+                email: "srueda@emb.com",
+                rol: "user",
+                estado: "inactive",
+                id_empleado: "EMB-003",
+                departamento: "Química",
+                fecha_ingreso: "2023-03-10",
+                avatar_text: "SR"
+            },
+            {
+                id: 4,
+                nombre: "Pilar",
+                apellidos: "Lizarazo Díaz",
+                email: "plizarazo@emb.com",
+                rol: "user",
+                estado: "active",
+                id_empleado: "EMB-004",
+                departamento: "Control de Calidad",
+                fecha_ingreso: "2023-04-05",
+                avatar_text: "PL"
+            },
+            {
+                id: 5,
+                nombre: "Miguel",
+                apellidos: "Sánchez Ortega",
+                email: "msanchez@emb.com",
+                rol: "editor",
+                estado: "inactive",
+                id_empleado: "EMB-005",
+                departamento: "Investigación",
+                fecha_ingreso: "2023-05-12",
+                avatar_text: "MS"
+            },
+            {
+                id: 6,
+                nombre: "Ana",
+                apellidos: "Gómez Silva",
+                email: "agomez@emb.com",
+                rol: "user",
+                estado: "active",
+                id_empleado: "EMB-006",
+                departamento: "Administración",
+                fecha_ingreso: "2023-06-18",
+                avatar_text: "AG"
+            }
+        ];
+
+        // Variables globales
+        let selectedUsers = [];
+        let filteredUsers = [...usersData];
+
+        // Elementos del DOM
+        const userList = document.getElementById('userList');
+        const emptyState = document.getElementById('emptyState');
+        const bulkActions = document.getElementById('bulkActions');
+        const selectedCount = document.getElementById('selectedCount');
+        const selectedNumber = document.getElementById('selectedNumber');
+        const btnSelectAll = document.getElementById('btnSelectAll');
+        const btnDeselectAll = document.getElementById('btnDeselectAll');
+        const btnActivateSelected = document.getElementById('btnActivateSelected');
+        const btnDeactivateSelected = document.getElementById('btnDeactivateSelected');
+        const btnCancel = document.getElementById('btnCancel');
+        const successMessage = document.getElementById('successMessage');
+        const statusFilter = document.getElementById('statusFilter');
+        const roleFilter = document.getElementById('roleFilter');
+        const searchInput = document.getElementById('searchInput');
+        const totalUsers = document.getElementById('totalUsers');
+        const activeUsers = document.getElementById('activeUsers');
+        const inactiveUsers = document.getElementById('inactiveUsers');
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderUserList();
+            setupEventListeners();
+        });
+
+        function updateStats() {
+            const total = usersData.length;
+            const active = usersData.filter(user => user.estado === 'active').length;
+            const inactive = usersData.filter(user => user.estado === 'inactive').length;
+            
+            totalUsers.textContent = total;
+            activeUsers.textContent = active;
+            inactiveUsers.textContent = inactive;
+        }
+
+        function renderUserList() {
+            userList.innerHTML = '';
+            
+            if (filteredUsers.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            filteredUsers.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.dataset.userId = user.id;
+                
+                const isSelected = selectedUsers.includes(user.id);
+                if (isSelected) {
+                    userItem.classList.add('selected');
+                }
+                
+                userItem.innerHTML = `
+                    <input type="checkbox" class="user-checkbox" ${isSelected ? 'checked' : ''}>
+                    <div class="user-avatar ${user.estado}">${user.avatar_text}</div>
+                    <div class="user-info">
+                        <div class="user-name">${user.nombre} ${user.apellidos}</div>
+                        <div class="user-details">
+                            <span>${user.email}</span>
+                            <span>${user.id_empleado}</span>
+                            <span>${user.departamento}</span>
+                            <span>${formatDate(user.fecha_ingreso)}</span>
+                        </div>
+                    </div>
+                    <div class="user-status ${user.estado === 'active' ? 'status-active' : 'status-inactive'}">
+                        ${user.estado === 'active' ? '✅ Activo' : '⏸️ Inactivo'}
+                    </div>
+                    <div class="user-role ${getRoleClass(user.rol)}">
+                        ${getRoleIcon(user.rol)} ${getRoleDisplayName(user.rol)}
+                    </div>
+                `;
+                
+                userList.appendChild(userItem);
+            });
+            
+            updateBulkActions();
+        }
+
+        function setupEventListeners() {
+            // Selección de usuarios
+            userList.addEventListener('click', function(e) {
+                const userItem = e.target.closest('.user-item');
+                if (!userItem) return;
+                
+                const userId = parseInt(userItem.dataset.userId);
+                const checkbox = userItem.querySelector('.user-checkbox');
+                
+                if (e.target === checkbox || e.target.closest('.user-checkbox')) {
+                    // El clic fue en el checkbox, ya se maneja con el evento change
+                    return;
+                }
+                
+                // Toggle selección al hacer clic en cualquier parte del item
+                checkbox.checked = !checkbox.checked;
+                handleUserSelection(userId, checkbox.checked);
+            });
+            
+            // Checkbox change event
+            userList.addEventListener('change', function(e) {
+                if (e.target.classList.contains('user-checkbox')) {
+                    const userId = parseInt(e.target.closest('.user-item').dataset.userId);
+                    handleUserSelection(userId, e.target.checked);
+                }
+            });
+            
+            // Botón seleccionar todos
+            btnSelectAll.addEventListener('click', function() {
+                selectedUsers = filteredUsers.map(user => user.id);
+                renderUserList();
+            });
+            
+            // Botón deseleccionar todos
+            btnDeselectAll.addEventListener('click', function() {
+                selectedUsers = [];
+                renderUserList();
+            });
+            
+            // Botón activar seleccionados
+            btnActivateSelected.addEventListener('click', function() {
+                activateSelectedUsers();
+            });
+            
+            // Botón desactivar seleccionados
+            btnDeactivateSelected.addEventListener('click', function() {
+                deactivateSelectedUsers();
+            });
+            
+            // Botón cancelar
+            btnCancel.addEventListener('click', function() {
+                if (confirm('¿Está seguro de que desea cancelar? Se perderán todos los cambios no guardados.')) {
+                    window.history.back();
+                }
+            });
+            
+            // Filtros
+            statusFilter.addEventListener('change', filterUsers);
+            roleFilter.addEventListener('change', filterUsers);
+            searchInput.addEventListener('input', filterUsers);
+        }
+
+        function handleUserSelection(userId, isSelected) {
+            if (isSelected) {
+                if (!selectedUsers.includes(userId)) {
+                    selectedUsers.push(userId);
+                }
+            } else {
+                selectedUsers = selectedUsers.filter(id => id !== userId);
+            }
+            
+            // Actualizar apariencia visual
+            const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
+            if (userItem) {
+                userItem.classList.toggle('selected', isSelected);
+            }
+            
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const selectedCountValue = selectedUsers.length;
+            
+            if (selectedCountValue > 0) {
+                bulkActions.classList.add('show');
+                selectedNumber.textContent = selectedCountValue;
+                
+                // Actualizar textos de los botones
+                btnActivateSelected.textContent = `✅ Activar (${selectedCountValue})`;
+                btnDeactivateSelected.textContent = `⏸️ Desactivar (${selectedCountValue})`;
+            } else {
+                bulkActions.classList.remove('show');
+            }
+        }
+
+        function filterUsers() {
+            const statusValue = statusFilter.value;
+            const roleValue = roleFilter.value;
+            const searchValue = searchInput.value.toLowerCase();
+            
+            filteredUsers = usersData.filter(user => {
+                // Filtrar por estado
+                if (statusValue && user.estado !== statusValue) {
+                    return false;
+                }
+                
+                // Filtrar por rol
+                if (roleValue && user.rol !== roleValue) {
+                    return false;
+                }
+                
+                // Filtrar por búsqueda
+                if (searchValue) {
+                    const searchText = `${user.nombre} ${user.apellidos} ${user.email} ${user.id_empleado} ${user.departamento}`.toLowerCase();
+                    if (!searchText.includes(searchValue)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            // Limpiar selección al filtrar
+            selectedUsers = [];
+            renderUserList();
+        }
+
+        function activateSelectedUsers() {
+            if (selectedUsers.length === 0) {
+                alert('Por favor, seleccione al menos un usuario.');
+                return;
+            }
+            
+            const userCount = selectedUsers.length;
+            const confirmationMessage = userCount === 1 
+                ? `¿Está seguro de que desea activar el usuario seleccionado?`
+                : `¿Está seguro de que desea activar los ${userCount} usuarios seleccionados?`;
+            
+            if (!confirm(confirmationMessage)) {
+                return;
+            }
+            
+            // Activar usuarios seleccionados
+            selectedUsers.forEach(userId => {
+                const user = usersData.find(u => u.id === userId);
+                if (user) {
+                    user.estado = 'active';
+                }
+            });
+            
+            // Mostrar mensaje de éxito
+            showSuccessMessage();
+            
+            // Actualizar estadísticas y lista
+            updateStats();
+            filterUsers();
+        }
+
+        function deactivateSelectedUsers() {
+            if (selectedUsers.length === 0) {
+                alert('Por favor, seleccione al menos un usuario.');
+                return;
+            }
+            
+            // Verificar si se está intentando desactivar a uno mismo
+            const currentUser = usersData[0]; // En una app real, esto vendría de la sesión
+            if (selectedUsers.includes(currentUser.id)) {
+                alert('No puede desactivar su propio usuario.');
+                return;
+            }
+            
+            const userCount = selectedUsers.length;
+            const confirmationMessage = userCount === 1 
+                ? `¿Está seguro de que desea desactivar el usuario seleccionado?`
+                : `¿Está seguro de que desea desactivar los ${userCount} usuarios seleccionados?`;
+            
+            if (!confirm(confirmationMessage)) {
+                return;
+            }
+            
+            // Desactivar usuarios seleccionados
+            selectedUsers.forEach(userId => {
+                const user = usersData.find(u => u.id === userId);
+                if (user) {
+                    user.estado = 'inactive';
+                }
+            });
+            
+            // Mostrar mensaje de éxito
+            showSuccessMessage();
+            
+            // Actualizar estadísticas y lista
+            updateStats();
+            filterUsers();
+        }
+
+        function showSuccessMessage() {
+            successMessage.style.display = 'flex';
+            
+            // Desplazarse al inicio
+            window.scrollTo(0, 0);
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Funciones auxiliares
+        function getRoleClass(role) {
+            switch(role) {
+                case 'admin': return 'role-admin';
+                case 'editor': return 'role-editor';
+                case 'user': return 'role-user';
+                default: return 'role-user';
+            }
+        }
+
+        function getRoleIcon(role) {
+            switch(role) {
+                case 'admin': return '👑';
+                case 'editor': return '✏️';
+                case 'user': return '👤';
+                default: return '👤';
+            }
+        }
+
+        function getRoleDisplayName(role) {
+            switch(role) {
+                case 'admin': return 'Administrador';
+                case 'editor': return 'Editor';
+                case 'user': return 'Usuario';
+                default: return 'Usuario';
+            }
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('es-ES', options);
+        }
+    </script>
+</body>
+</html>

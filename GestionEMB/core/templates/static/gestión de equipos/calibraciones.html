@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Calibraciones - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .content-area {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0077B6, #005a8f);
+            padding: 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #005a8f;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .stat-icon.success {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .stat-icon.danger {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .stat-icon.info {
+            background: #e6f3f9;
+            color: #0077B6;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #525252;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .tabs-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #0077B6;
+            border-bottom-color: #0077B6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            background: #FFFFFF;
+            min-width: 180px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .calibration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .calibration-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .calibration-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .calibration-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calibration-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0077B6;
+        }
+
+        .calibration-status {
+            display: inline-flex;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-valid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-expiring {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-expired {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-pending {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .calibration-body {
+            padding: 1.25rem;
+        }
+
+        .calibration-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        .calibration-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calibration-actions .btn {
+            flex: 1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .calibration-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calibration-table th,
+        .calibration-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .calibration-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #525252;
+            font-size: 0.9rem;
+        }
+
+        .calibration-table td {
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        .calibration-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #525252;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: #f59e0b;
+        }
+
+        .alert-content h3 {
+            color: #92400e;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            color: #78350f;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .certificate-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            background: #e6f3f9;
+            color: #0077B6;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .certificate-badge:hover {
+            background: #d1e7f5;
+        }
+
+        .progress-container {
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.valid {
+            background: #10b981;
+        }
+
+        .progress-fill.expiring {
+            background: #f59e0b;
+        }
+
+        .progress-fill.expired {
+            background: #ef4444;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.75rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #0077B6;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 0 2px #0077B6;
+        }
+
+        .timeline-item.expired::before {
+            background: #ef4444;
+            box-shadow: 0 0 0 2px #ef4444;
+        }
+
+        .timeline-item.expiring::before {
+            background: #f59e0b;
+            box-shadow: 0 0 0 2px #f59e0b;
+        }
+
+        .timeline-content {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #0077B6;
+        }
+
+        .timeline-content.expired {
+            border-left-color: #ef4444;
+        }
+
+        .timeline-content.expiring {
+            border-left-color: #f59e0b;
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #525252;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-details {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #ef4444;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .calibration-details {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .detail-value {
+            color: #6b7280;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: #10b981;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .notification.warning {
+            background: #f59e0b;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .calibration-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-filters {
+                flex-direction: column;
+            }
+            .search-box {
+                min-width: 100%;
+            }
+            .calibration-grid {
+                grid-template-columns: 1fr;
+            }
+            .tabs-header {
+                flex-direction: column;
+            }
+            .tab {
+                text-align: left;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="#" class="nav-item">🔧 Mantenimiento</a>
+        <a href="#" class="nav-item active">📊 Calibraciones</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Equipos</a>
+                <span>/</span>
+                <span>Historial de Calibraciones</span>
+            </div>
+            <div class="admin-badge">
+                👑 Modo Administrador
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-header">
+                <h1>Historial de Calibraciones</h1>
+                <p>Gestione y consulte el historial completo de calibraciones de todos los equipos del laboratorio</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        ✅
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="validCount">18</div>
+                        <div class="stat-label">Calibraciones Válidas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        ⚠️
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="expiringCount">3</div>
+                        <div class="stat-label">Por Vencer (30 días)</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        🔴
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="expiredCount">2</div>
+                        <div class="stat-label">Calibraciones Vencidas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        📅
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="scheduledCount">5</div>
+                        <div class="stat-label">Programadas este Mes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h3>Calibraciones por Vencer</h3>
+                    <p>Hay <strong>3 calibraciones que vencerán en los próximos 30 días</strong> y <strong>2 calibraciones vencidas</strong>. Programe las recalibraciones necesarias.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">📊</div>
+                        Gestión de Calibraciones
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="openNewCalibrationModal()">
+                            ➕ Nueva Calibración
+                        </button>
+                        <button class="btn btn-secondary" onclick="generateCalibrationReport()">
+                            📄 Generar Reporte
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tabs-container">
+                        <div class="tabs-header">
+                            <button class="tab active" onclick="openTab('current')">✅ Válidas</button>
+                            <button class="tab" onclick="openTab('expiring')">⚠️ Por Vencer</button>
+                            <button class="tab" onclick="openTab('expired')">🔴 Vencidas</button>
+                            <button class="tab" onclick="openTab('all')">📋 Todas</button>
+                            <button class="tab" onclick="openTab('timeline')">🕒 Línea de Tiempo</button>
+                        </div>
+
+                        <div id="current" class="tab-content active">
+                            <div class="search-filters">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" class="search-input" id="searchCurrent" placeholder="Buscar calibraciones válidas..." onkeyup="filterCalibrations('current')">
+                                </div>
+                                <select class="filter-select" id="equipmentFilterCurrent" onchange="filterCalibrations('current')">
+                                    <option value="">Todos los equipos</option>
+                                    <option value="incubator">Incubadoras</option>
+                                    <option value="microscope">Microscopios</option>
+                                    <option value="centrifuge">Centrífugas</option>
+                                    <option value="spectrophotometer">Espectrofotómetros</option>
+                                </select>
+                            </div>
+
+                            <div class="calibration-grid" id="currentGrid">
+                                <!-- Calibraciones válidas se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <div id="expiring" class="tab-content">
+                            <div class="calibration-grid" id="expiringGrid">
+                                <!-- Calibraciones por vencer se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <div id="expired" class="tab-content">
+                            <div class="calibration-grid" id="expiredGrid">
+                                <!-- Calibraciones vencidas se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <div id="all" class="tab-content">
+                            <div class="search-filters">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" class="search-input" id="searchAll" placeholder="Buscar en todas las calibraciones..." onkeyup="filterCalibrations('all')">
+                                </div>
+                                <select class="filter-select" id="statusFilterAll" onchange="filterCalibrations('all')">
+                                    <option value="">Todos los estados</option>
+                                    <option value="valid">Válidas</option>
+                                    <option value="expiring">Por Vencer</option>
+                                    <option value="expired">Vencidas</option>
+                                </select>
+                                <select class="filter-select" id="equipmentFilterAll" onchange="filterCalibrations('all')">
+                                    <option value="">Todos los equipos</option>
+                                    <option value="incubator">Incubadoras</option>
+                                    <option value="microscope">Microscopios</option>
+                                    <option value="centrifuge">Centrífugas</option>
+                                    <option value="spectrophotometer">Espectrofotómetros</option>
+                                </select>
+                            </div>
+
+                            <div class="table-container">
+                                <table class="calibration-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Equipo</th>
+                                            <th>Última Calibración</th>
+                                            <th>Próxima Calibración</th>
+                                            <th>Estado</th>
+                                            <th>Técnico</th>
+                                            <th>Certificado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="allTable">
+                                        <!-- Todas las calibraciones se cargarán aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="timeline" class="tab-content">
+                            <div class="timeline" id="calibrationTimeline">
+                                <!-- Línea de tiempo de calibraciones se cargará aquí -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para reprogramar calibración -->
+    <div class="modal" id="rescheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Reprogramar Calibración</h2>
+                <button class="modal-close" onclick="closeRescheduleModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="calibration-details" id="calibrationDetails">
+                    <!-- Detalles de la calibración se cargarán aquí -->
+                </div>
+                
+                <form id="rescheduleForm">
+                    <div class="form-group">
+                        <label class="form-label" for="nextCalibrationDate">Nueva Fecha de Calibración *</label>
+                        <input type="date" class="form-control" id="nextCalibrationDate" required>
+                        <div class="form-text">Seleccione la fecha en la que se realizará la próxima calibración</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="calibrationType">Tipo de Calibración</label>
+                        <select class="form-control" id="calibrationType">
+                            <option value="Anual">Anual</option>
+                            <option value="Semestral">Semestral</option>
+                            <option value="Trimestral">Trimestral</option>
+                            <option value="Mensual">Mensual</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="assignedTechnician">Técnico Asignado</label>
+                        <select class="form-control" id="assignedTechnician">
+                            <option value="TecnoLab S.A.S.">TecnoLab S.A.S.</option>
+                            <option value="Servicio Técnico Interno">Servicio Técnico Interno</option>
+                            <option value="Gabriela Ramírez">Gabriela Ramírez</option>
+                            <option value="Carlos Perea">Carlos Perea</option>
+                            <option value="Sura Rueda">Sura Rueda</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="calibrationNotes">Notas Adicionales</label>
+                        <textarea class="form-control" id="calibrationNotes" rows="3" placeholder="Agregue cualquier observación o nota importante..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRescheduleModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveReschedule()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación -->
+    <div class="notification" id="notification">
+        <span id="notificationIcon">✅</span>
+        <span id="notificationText">Operación completada con éxito</span>
+    </div>
+
+    <script>
+        // Datos de ejemplo para calibraciones
+        let calibrationData = [
+            {
+                id: 1,
+                equipmentId: 1,
+                equipmentName: "Incubadora de CO₂",
+                equipmentModel: "HERAcell 150i",
+                type: "Anual",
+                lastCalibration: "2024-08-15",
+                nextCalibration: "2025-08-15",
+                status: "valid",
+                technician: "TecnoLab S.A.S.",
+                certificate: "CAL-2024-001",
+                parameters: "Temperatura: ±0.1°C, CO₂: ±0.5%",
+                results: "Dentro de especificaciones",
+                notes: "Calibración exitosa, equipo en óptimas condiciones",
+                cost: 450000
+            },
+            {
+                id: 2,
+                equipmentId: 2,
+                equipmentName: "Microscopio Invertido",
+                equipmentModel: "Olympus IX73",
+                type: "Semestral",
+                lastCalibration: "2024-09-20",
+                nextCalibration: "2025-03-20",
+                status: "valid",
+                technician: "Servicio Técnico Interno",
+                certificate: "CAL-2024-002",
+                parameters: "Aumento: ±1%, Iluminación: ±5%",
+                results: "Dentro de especificaciones",
+                notes: "Ligera desviación en aumento 40x, dentro de tolerancia",
+                cost: 0
+            },
+            {
+                id: 3,
+                equipmentId: 3,
+                equipmentName: "Centrífuga Refrigerada",
+                equipmentModel: "Eppendorf 5430 R",
+                type: "Anual",
+                lastCalibration: "2024-03-15",
+                nextCalibration: "2024-12-15",
+                status: "expiring",
+                technician: "TecnoLab S.A.S.",
+                certificate: "CAL-2024-003",
+                parameters: "Velocidad: ±10 rpm, Temperatura: ±0.5°C",
+                results: "Dentro de especificaciones",
+                notes: "Requiere recalibración antes de diciembre",
+                cost: 380000
+            },
+            {
+                id: 4,
+                equipmentId: 4,
+                equipmentName: "Espectrofotómetro UV-Vis",
+                equipmentModel: "Thermo NanoDrop One",
+                type: "Anual",
+                lastCalibration: "2023-11-10",
+                nextCalibration: "2024-11-10",
+                status: "expired",
+                technician: "Gabriela Ramírez",
+                certificate: "CAL-2023-004",
+                parameters: "Longitud de onda: ±1 nm, Absorbancia: ±0.5%",
+                results: "Dentro de especificaciones",
+                notes: "Calibración vencida, programar urgentemente",
+                cost: 0
+            },
+            {
+                id: 5,
+                equipmentId: 5,
+                equipmentName: "Autoclave de Vapor",
+                equipmentModel: "Tuttnauer 3870EA",
+                type: "Semestral",
+                lastCalibration: "2024-07-05",
+                nextCalibration: "2025-01-05",
+                status: "valid",
+                technician: "TecnoLab S.A.S.",
+                certificate: "CAL-2024-005",
+                parameters: "Temperatura: ±0.5°C, Presión: ±0.1 bar",
+                results: "Dentro de especificaciones",
+                notes: "Válvulas de seguridad verificadas correctamente",
+                cost: 320000
+            },
+            {
+                id: 6,
+                equipmentId: 6,
+                equipmentName: "Agitador Orbital",
+                equipmentModel: "New Brunswick Innova 42",
+                type: "Anual",
+                lastCalibration: "2023-12-20",
+                nextCalibration: "2024-12-20",
+                status: "expiring",
+                technician: "Servicio Técnico Interno",
+                certificate: "CAL-2023-006",
+                parameters: "Velocidad: ±2 rpm, Temperatura: ±0.3°C",
+                results: "Dentro de especificaciones",
+                notes: "Programar recalibración para diciembre",
+                cost: 0
+            },
+            {
+                id: 7,
+                equipmentId: 7,
+                equipmentName: "Báscula Analítica",
+                equipmentModel: "Sartorius Entris",
+                type: "Anual",
+                lastCalibration: "2023-09-15",
+                nextCalibration: "2024-09-15",
+                status: "expired",
+                technician: "Carlos Perea",
+                certificate: "CAL-2023-007",
+                parameters: "Precisión: ±0.0001g, Linealidad: ±0.0002g",
+                results: "Dentro de especificaciones",
+                notes: "Calibración vencida, no usar para mediciones críticas",
+                cost: 0
+            },
+            {
+                id: 8,
+                equipmentId: 8,
+                equipmentName: "pH-metro",
+                equipmentModel: "Metrohm 827",
+                type: "Trimestral",
+                lastCalibration: "2024-10-01",
+                nextCalibration: "2025-01-01",
+                status: "valid",
+                technician: "Sura Rueda",
+                certificate: "CAL-2024-008",
+                parameters: "pH: ±0.01, mV: ±0.1",
+                results: "Dentro de especificaciones",
+                notes: "Electrodos en buen estado, buffer verificado",
+                cost: 0
+            }
+        ];
+
+        // Variable para almacenar la calibración actual que se está reprogramando
+        let currentRescheduleId = null;
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderCalibrationCards();
+            renderAllCalibrationsTable();
+            renderTimeline();
+            
+            // Configurar fecha mínima para el campo de fecha (hoy)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('nextCalibrationDate').min = today;
+        });
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const valid = calibrationData.filter(c => c.status === 'valid').length;
+            const expiring = calibrationData.filter(c => c.status === 'expiring').length;
+            const expired = calibrationData.filter(c => c.status === 'expired').length;
+            const scheduledThisMonth = calibrationData.filter(c => {
+                const nextCalibration = new Date(c.nextCalibration);
+                const today = new Date();
+                return nextCalibration.getMonth() === today.getMonth() && 
+                       nextCalibration.getFullYear() === today.getFullYear();
+            }).length;
+
+            document.getElementById('validCount').textContent = valid;
+            document.getElementById('expiringCount').textContent = expiring;
+            document.getElementById('expiredCount').textContent = expired;
+            document.getElementById('scheduledCount').textContent = scheduledThisMonth;
+        }
+
+        // Renderizar tarjetas de calibración
+        function renderCalibrationCards() {
+            renderCurrentCalibrations();
+            renderExpiringCalibrations();
+            renderExpiredCalibrations();
+        }
+
+        // Renderizar calibraciones válidas
+        function renderCurrentCalibrations() {
+            const current = calibrationData.filter(c => c.status === 'valid');
+            const grid = document.getElementById('currentGrid');
+            
+            if (current.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">✅</div>
+                        <h3>No hay calibraciones válidas</h3>
+                        <p>No se encontraron calibraciones con estado válido.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = current.map(calibration => `
+                <div class="calibration-card">
+                    <div class="calibration-header">
+                        <div class="calibration-title">${calibration.equipmentName}</div>
+                        <span class="calibration-status status-valid">Válida</span>
+                    </div>
+                    <div class="calibration-body">
+                        <div class="calibration-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${calibration.equipmentModel}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Última Calibración:</span>
+                                <span class="info-value">${formatDate(calibration.lastCalibration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Próxima Calibración:</span>
+                                <span class="info-value">${formatDate(calibration.nextCalibration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Técnico:</span>
+                                <span class="info-value">${calibration.technician}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Certificado:</span>
+                                <span class="info-value">
+                                    <span class="certificate-badge" onclick="viewCertificate(${calibration.id})">
+                                        📄 ${calibration.certificate}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill valid" style="width: ${calculateProgress(calibration.nextCalibration)}%"></div>
+                            </div>
+                            <div class="progress-text">${calculateDaysRemaining(calibration.nextCalibration)} días restantes</div>
+                        </div>
+                        <div class="calibration-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewCalibration(${calibration.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="openRescheduleModal(${calibration.id})">
+                                📅 Re-programar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar calibraciones por vencer
+        function renderExpiringCalibrations() {
+            const expiring = calibrationData.filter(c => c.status === 'expiring');
+            const grid = document.getElementById('expiringGrid');
+            
+            if (expiring.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>No hay calibraciones por vencer</h3>
+                        <p>¡Excelente! Todas las calibraciones están al día.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = expiring.map(calibration => `
+                <div class="calibration-card">
+                    <div class="calibration-header">
+                        <div class="calibration-title">${calibration.equipmentName}</div>
+                        <span class="calibration-status status-expiring">Por Vencer</span>
+                    </div>
+                    <div class="calibration-body">
+                        <div class="calibration-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${calibration.equipmentModel}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Última Calibración:</span>
+                                <span class="info-value">${formatDate(calibration.lastCalibration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Próxima Calibración:</span>
+                                <span class="info-value" style="color: #f59e0b;">${formatDate(calibration.nextCalibration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Días Restantes:</span>
+                                <span class="info-value" style="color: #f59e0b;">
+                                    ${calculateDaysRemaining(calibration.nextCalibration)} días
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Certificado:</span>
+                                <span class="info-value">
+                                    <span class="certificate-badge" onclick="viewCertificate(${calibration.id})">
+                                        📄 ${calibration.certificate}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill expiring" style="width: ${calculateProgress(calibration.nextCalibration)}%"></div>
+                            </div>
+                            <div class="progress-text">${calculateDaysRemaining(calibration.nextCalibration)} días restantes</div>
+                        </div>
+                        <div class="calibration-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewCalibration(${calibration.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="openRescheduleModal(${calibration.id})">
+                                🔧 Programar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar calibraciones vencidas
+        function renderExpiredCalibrations() {
+            const expired = calibrationData.filter(c => c.status === 'expired');
+            const grid = document.getElementById('expiredGrid');
+            
+            if (expired.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🔴</div>
+                        <h3>No hay calibraciones vencidas</h3>
+                        <p>¡Excelente! Todas las calibraciones están al día.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = expired.map(calibration => `
+                <div class="calibration-card">
+                    <div class="calibration-header">
+                        <div class="calibration-title">${calibration.equipmentName}</div>
+                        <span class="calibration-status status-expired">Vencida</span>
+                    </div>
+                    <div class="calibration-body">
+                        <div class="calibration-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${calibration.equipmentModel}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Última Calibración:</span>
+                                <span class="info-value">${formatDate(calibration.lastCalibration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Próxima Calibración:</span>
+                                <span class="info-value" style="color: #ef4444;">${formatDate(calibration.nextCalibration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Días de Retraso:</span>
+                                <span class="info-value" style="color: #ef4444;">
+                                    ${Math.abs(calculateDaysRemaining(calibration.nextCalibration))} días
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Certificado:</span>
+                                <span class="info-value">
+                                    <span class="certificate-badge" onclick="viewCertificate(${calibration.id})">
+                                        📄 ${calibration.certificate}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill expired" style="width: 100%"></div>
+                            </div>
+                            <div class="progress-text">Vencida hace ${Math.abs(calculateDaysRemaining(calibration.nextCalibration))} días</div>
+                        </div>
+                        <div class="calibration-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewCalibration(${calibration.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="openRescheduleModal(${calibration.id})">
+                                🔧 Urgente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar todas las calibraciones en tabla
+        function renderAllCalibrationsTable() {
+            const table = document.getElementById('allTable');
+            
+            if (calibrationData.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #6b7280;">
+                            No hay calibraciones registradas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            table.innerHTML = calibrationData.map(calibration => {
+                let statusBadge = '';
+                if (calibration.status === 'valid') {
+                    statusBadge = '<span class="calibration-status status-valid">Válida</span>';
+                } else if (calibration.status === 'expiring') {
+                    statusBadge = '<span class="calibration-status status-expiring">Por Vencer</span>';
+                } else {
+                    statusBadge = '<span class="calibration-status status-expired">Vencida</span>';
+                }
+                
+                return `
+                    <tr>
+                        <td>
+                            <div><strong>${calibration.equipmentName}</strong></div>
+                            <div style="font-size: 0.85rem; color: #6b7280;">${calibration.equipmentModel}</div>
+                        </td>
+                        <td>${formatDate(calibration.lastCalibration)}</td>
+                        <td>${formatDate(calibration.nextCalibration)}</td>
+                        <td>${statusBadge}</td>
+                        <td>${calibration.technician}</td>
+                        <td>
+                            <span class="certificate-badge" onclick="viewCertificate(${calibration.id})">
+                                📄 ${calibration.certificate}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="viewCalibration(${calibration.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="openRescheduleModal(${calibration.id})">
+                                📅 Reprogramar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Renderizar línea de tiempo
+        function renderTimeline() {
+            const timeline = document.getElementById('calibrationTimeline');
+            
+            // Ordenar calibraciones por fecha de próxima calibración
+            const sortedCalibrations = [...calibrationData].sort((a, b) => 
+                new Date(a.nextCalibration) - new Date(b.nextCalibration)
+            );
+            
+            if (sortedCalibrations.length === 0) {
+                timeline.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🕒</div>
+                        <h3>No hay calibraciones registradas</h3>
+                        <p>No se encontraron datos para mostrar en la línea de tiempo.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            timeline.innerHTML = sortedCalibrations.map(calibration => {
+                let itemClass = 'timeline-item';
+                let contentClass = 'timeline-content';
+                
+                if (calibration.status === 'expired') {
+                    itemClass += ' expired';
+                    contentClass += ' expired';
+                } else if (calibration.status === 'expiring') {
+                    itemClass += ' expiring';
+                    contentClass += ' expiring';
+                }
+                
+                return `
+                    <div class="${itemClass}">
+                        <div class="${contentClass}">
+                            <div class="timeline-date">${formatDate(calibration.nextCalibration)}</div>
+                            <div class="timeline-title">${calibration.equipmentName}</div>
+                            <div class="timeline-details">
+                                <strong>Modelo:</strong> ${calibration.equipmentModel} | 
+                                <strong>Certificado:</strong> ${calibration.certificate} | 
+                                <strong>Técnico:</strong> ${calibration.technician}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Funciones de utilidad
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('es-CO', options);
+        }
+
+        function calculateDaysRemaining(nextCalibrationDate) {
+            const today = new Date();
+            const nextDate = new Date(nextCalibrationDate);
+            const diffTime = nextDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function calculateProgress(nextCalibrationDate) {
+            const lastCalibrationDate = new Date(nextCalibrationDate);
+            lastCalibrationDate.setFullYear(lastCalibrationDate.getFullYear() - 1); // Asumimos calibración anual
+            
+            const today = new Date();
+            const totalPeriod = new Date(nextCalibrationDate) - lastCalibrationDate;
+            const elapsed = today - lastCalibrationDate;
+            
+            return Math.min(100, Math.max(0, (elapsed / totalPeriod) * 100));
+        }
+
+        // Cambiar entre pestañas
+        function openTab(tabName) {
+            // Ocultar todas las pestañas
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            // Desactivar todos los botones
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+
+            // Activar la pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activar el botón correspondiente
+            event.currentTarget.classList.add('active');
+        }
+
+        // Funciones para reprogramar calibraciones
+        function openRescheduleModal(id) {
+            currentRescheduleId = id;
+            const calibration = calibrationData.find(c => c.id === id);
+            
+            if (!calibration) {
+                showNotification('No se encontró la calibración seleccionada', 'error');
+                return;
+            }
+            
+            // Llenar los detalles de la calibración
+            document.getElementById('calibrationDetails').innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Equipo:</span>
+                    <span class="detail-value">${calibration.equipmentName} - ${calibration.equipmentModel}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Última Calibración:</span>
+                    <span class="detail-value">${formatDate(calibration.lastCalibration)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Próxima Calibración Actual:</span>
+                    <span class="detail-value">${formatDate(calibration.nextCalibration)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Estado Actual:</span>
+                    <span class="detail-value">${getStatusText(calibration.status)}</span>
+                </div>
+            `;
+            
+            // Llenar el formulario con los valores actuales
+            document.getElementById('nextCalibrationDate').value = calibration.nextCalibration;
+            document.getElementById('calibrationType').value = calibration.type;
+            document.getElementById('assignedTechnician').value = calibration.technician;
+            document.getElementById('calibrationNotes').value = calibration.notes || '';
+            
+            // Mostrar el modal
+            document.getElementById('rescheduleModal').classList.add('active');
+        }
+
+        function closeRescheduleModal() {
+            document.getElementById('rescheduleModal').classList.remove('active');
+            currentRescheduleId = null;
+        }
+
+        function saveReschedule() {
+            if (!currentRescheduleId) return;
+            
+            const nextCalibrationDate = document.getElementById('nextCalibrationDate').value;
+            const calibrationType = document.getElementById('calibrationType').value;
+            const assignedTechnician = document.getElementById('assignedTechnician').value;
+            const calibrationNotes = document.getElementById('calibrationNotes').value;
+            
+            // Validaciones
+            if (!nextCalibrationDate) {
+                showNotification('Debe seleccionar una fecha para la próxima calibración', 'error');
+                return;
+            }
+            
+            // Encontrar la calibración a actualizar
+            const calibrationIndex = calibrationData.findIndex(c => c.id === currentRescheduleId);
+            if (calibrationIndex === -1) {
+                showNotification('No se encontró la calibración seleccionada', 'error');
+                return;
+            }
+            
+            // Actualizar la calibración
+            calibrationData[calibrationIndex].nextCalibration = nextCalibrationDate;
+            calibrationData[calibrationIndex].type = calibrationType;
+            calibrationData[calibrationIndex].technician = assignedTechnician;
+            calibrationData[calibrationIndex].notes = calibrationNotes;
+            
+            // Actualizar estado basado en la nueva fecha
+            const daysRemaining = calculateDaysRemaining(nextCalibrationDate);
+            if (daysRemaining > 30) {
+                calibrationData[calibrationIndex].status = 'valid';
+            } else if (daysRemaining > 0) {
+                calibrationData[calibrationIndex].status = 'expiring';
+            } else {
+                calibrationData[calibrationIndex].status = 'expired';
+            }
+            
+            // Actualizar la interfaz
+            updateStats();
+            renderCalibrationCards();
+            renderAllCalibrationsTable();
+            renderTimeline();
+            
+            // Cerrar el modal y mostrar notificación
+            closeRescheduleModal();
+            showNotification('Calibración reprogramada exitosamente');
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'valid': return 'Válida';
+                case 'expiring': return 'Por Vencer';
+                case 'expired': return 'Vencida';
+                default: return 'Desconocido';
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationIcon = document.getElementById('notificationIcon');
+            const notificationText = document.getElementById('notificationText');
+            
+            // Configurar según el tipo
+            if (type === 'error') {
+                notificationIcon.textContent = '❌';
+                notification.classList.add('error');
+                notification.classList.remove('warning');
+            } else if (type === 'warning') {
+                notificationIcon.textContent = '⚠️';
+                notification.classList.add('warning');
+                notification.classList.remove('error');
+            } else {
+                notificationIcon.textContent = '✅';
+                notification.classList.remove('error', 'warning');
+            }
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            // Ocultar después de 3 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Funciones de acción (simuladas)
+        function openNewCalibrationModal() {
+            alert("En una implementación real, esto abriría un formulario para registrar nueva calibración.");
+        }
+
+        function generateCalibrationReport() {
+            alert("Generando reporte de calibraciones...");
+        }
+
+        function viewCalibration(id) {
+            alert(`Viendo detalles de la calibración ID: ${id}`);
+        }
+
+        function viewCertificate(id) {
+            alert(`Viendo certificado de calibración ID: ${id}`);
+        }
+
+        // Filtrar calibraciones
+        function filterCalibrations(type) {
+            // En una implementación real, esto filtraría las calibraciones según los criterios
+            console.log(`Filtrando calibraciones de tipo: ${type}`);
+        }
+    </script>
+</body>
+</html>

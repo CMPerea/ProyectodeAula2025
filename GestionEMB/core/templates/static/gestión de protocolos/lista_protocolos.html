@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolos - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title h1 {
+            color: #525252;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .btn-new {
+            padding: 0.75rem 1.5rem;
+            background: #0077B6;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-new:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: #FFFFFF;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filters-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 0.65rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .btn-filter {
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filter.primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-filter.primary:hover {
+            background: #006399;
+        }
+
+        .btn-filter.secondary {
+            background: #f3f4f6;
+            color: #525252;
+        }
+
+        .btn-filter.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-info {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-export {
+            padding: 0.6rem 1rem;
+            background: #f3f4f6;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #525252;
+        }
+
+        .btn-export:hover {
+            background: #e5e7eb;
+        }
+
+        /* Table */
+        .protocols-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .protocols-table thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .protocols-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #525252;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .protocols-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        .protocols-table tbody tr {
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .protocols-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Protocol Title Cell */
+        .protocol-title-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .protocol-title {
+            font-weight: 600;
+            color: #0077B6;
+        }
+
+        .protocol-description {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-badge.borrador {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-badge.revision {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .status-badge.validado {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .status-badge.obsoleto {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Category Badge */
+        .category-badge {
+            display: inline-flex;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: #e6f3f9;
+            color: #0077B6;
+        }
+
+        /* Actions Cell */
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .btn-action.view {
+            background: #e6f3f9;
+            color: #0077B6;
+        }
+
+        .btn-action.view:hover {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-action.edit {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .btn-action.edit:hover {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-action.delete {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .btn-action.delete:hover {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .btn-action.validate {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .btn-action.validate:hover {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-info {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-page {
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid #e5e7eb;
+            background: #FFFFFF;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .btn-page:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-page.active {
+            background: #0077B6;
+            color: #FFFFFF;
+            border-color: #0077B6;
+        }
+
+        .btn-page:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #525252;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item active">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="#" class="nav-item">📁 Archivos</a>
+        <a href="#" class="nav-item">👥 Usuarios</a>
+        <a href="#" class="nav-item">🔍 Auditoría</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Gestión de Protocolos</h1>
+            </div>
+            <button class="btn-new" onclick="crearProtocolo()">
+                ➕ Nuevo Protocolo
+            </button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filters-header">
+                    <h3 class="filters-title">Filtros de Búsqueda</h3>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Buscar</label>
+                        <input type="text" class="filter-input" id="searchInput" placeholder="Título, descripción o contenido...">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Categoría</label>
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="">Todas las categorías</option>
+                            <option value="biocontrol">Biocontrol</option>
+                            <option value="medios">Preparación de Medios</option>
+                            <option value="aislamiento">Aislamiento Microbiano</option>
+                            <option value="morfologico">Análisis Morfológico</option>
+                            <option value="adn">Extracción de ADN</option>
+                            <option value="fermentacion">Fermentación</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Estado</label>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">Todos los estados</option>
+                            <option value="borrador">Borrador</option>
+                            <option value="revision">En Revisión</option>
+                            <option value="validado">Validado</option>
+                            <option value="obsoleto">Obsoleto</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Autor</label>
+                        <select class="filter-select" id="authorFilter">
+                            <option value="">Todos los autores</option>
+                            <option value="1">Carlos Perea</option>
+                            <option value="2">Gabriela Ramírez</option>
+                            <option value="3">Sura Rueda</option>
+                            <option value="4">Pilar Lizarazo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions" style="margin-top: 1rem;">
+                    <button class="btn-filter primary" onclick="aplicarFiltros()">Buscar</button>
+                    <button class="btn-filter secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-info">
+                        Mostrando <strong id="itemsShown">8</strong> de <strong id="totalItems">24</strong> protocolos
+                    </div>
+                    <div class="table-actions">
+                        <button class="btn-export" onclick="exportarPDF()">📄 Exportar PDF</button>
+                        <button class="btn-export" onclick="exportarExcel()">📊 Exportar Excel</button>
+                    </div>
+                </div>
+
+                <table class="protocols-table">
+                    <thead>
+                        <tr>
+                            <th>Protocolo</th>
+                            <th>Categoría</th>
+                            <th>Autor</th>
+                            <th>Estado</th>
+                            <th>Fecha Creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="protocolsTableBody">
+                        <!-- Protocolo 1 -->
+                        <tr onclick="verDetalle(1)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Aislamiento de Actinobacterias del Cacao</div>
+                                    <div class="protocol-description">Protocolo para aislamiento y cultivo de actinobacterias asociadas a plantaciones de cacao</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Aislamiento</span></td>
+                            <td>Carlos Perea</td>
+                            <td><span class="status-badge validado">Validado</span></td>
+                            <td>15/08/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(1)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(1)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(1)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 2 -->
+                        <tr onclick="verDetalle(2)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Preparación de Medio PDA</div>
+                                    <div class="protocol-description">Procedimiento estandarizado para la preparación de medio Papa Dextrosa Agar</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Medios</span></td>
+                            <td>Gabriela Ramírez</td>
+                            <td><span class="status-badge validado">Validado</span></td>
+                            <td>10/08/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(2)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(2)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(2)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 3 -->
+                        <tr onclick="verDetalle(3)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Evaluación de Antagonismo in vitro</div>
+                                    <div class="protocol-description">Protocolo para evaluar actividad antagónica de microorganismos contra patógenos</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Biocontrol</span></td>
+                            <td>Sura Rueda</td>
+                            <td><span class="status-badge revision">En Revisión</span></td>
+                            <td>01/09/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(3)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(3)">✏️</button>
+                                    <button class="btn-action validate" title="Validar" onclick="event.stopPropagation(); validarProtocolo(3)">✓</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(3)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 4 -->
+                        <tr onclick="verDetalle(4)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Extracción de ADN por CTAB</div>
+                                    <div class="protocol-description">Método de extracción de ADN genómico utilizando buffer CTAB</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">ADN</span></td>
+                            <td>Carlos Perea</td>
+                            <td><span class="status-badge validado">Validado</span></td>
+                            <td>20/07/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(4)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(4)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(4)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 5 -->
+                        <tr onclick="verDetalle(5)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Tinción de Gram Modificada</div>
+                                    <div class="protocol-description">Técnica de tinción diferencial para caracterización bacteriana</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Morfológico</span></td>
+                            <td>Gabriela Ramírez</td>
+                            <td><span class="status-badge borrador">Borrador</span></td>
+                            <td>05/09/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(5)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(5)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(5)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 6 -->
+                        <tr onclick="verDetalle(6)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Fermentación de Cacao en Laboratorio</div>
+                                    <div class="protocol-description">Protocolo controlado para fermentación de mazorcas de cacao a escala de laboratorio</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Fermentación</span></td>
+                            <td>Pilar Lizarazo</td>
+                            <td><span class="status-badge validado">Validado</span></td>
+                            <td>30/06/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(6)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(6)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(6)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 7 -->
+                        <tr onclick="verDetalle(7)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Cultivo de Hongos Filamentosos</div>
+                                    <div class="protocol-description">Procedimiento para cultivo y mantenimiento de hongos filamentosos</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Aislamiento</span></td>
+                            <td>Sura Rueda</td>
+                            <td><span class="status-badge revision">En Revisión</span></td>
+                            <td>28/08/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(7)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(7)">✏️</button>
+                                    <button class="btn-action validate" title="Validar" onclick="event.stopPropagation(); validarProtocolo(7)">✓</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(7)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Protocolo 8 -->
+                        <tr onclick="verDetalle(8)">
+                            <td>
+                                <div class="protocol-title-cell">
+                                    <div class="protocol-title">Preparación de Medios Selectivos</div>
+                                    <div class="protocol-description">Protocolos para medios selectivos ISP2, ISP4 y medios con antibióticos</div>
+                                </div>
+                            </td>
+                            <td><span class="category-badge">Medios</span></td>
+                            <td>Carlos Perea</td>
+                            <td><span class="status-badge obsoleto">Obsoleto</span></td>
+                            <td>15/03/2024</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(8)">👁️</button>
+                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(8)">✏️</button>
+                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(8)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Página <strong>1</strong> de <strong>3</strong>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="btn-page" disabled>‹</button>
+                        <button class="btn-page active">1</button>
+                        <button class="btn-page">2</button>
+                        <button class="btn-page">3</button>
+                        <button class="btn-page">›</button>
+                    </div>
+                </div>
+            </div>

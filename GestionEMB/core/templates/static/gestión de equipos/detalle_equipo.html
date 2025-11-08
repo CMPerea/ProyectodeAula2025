@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Equipo - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .content-area {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0077B6, #005a8f);
+            padding: 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #005a8f;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .equipment-image {
+            background: #f3f4f6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            font-size: 6rem;
+            color: #9ca3af;
+        }
+
+        .equipment-image img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            color: #525252;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .info-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-badge.available {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.in-use {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.maintenance {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.out-of-service {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .spec-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .spec-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        .maintenance-history {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .maintenance-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #0077B6;
+        }
+
+        .maintenance-icon {
+            width: 40px;
+            height: 40px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .maintenance-content {
+            flex: 1;
+        }
+
+        .maintenance-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #525252;
+            margin-bottom: 0.25rem;
+        }
+
+        .maintenance-date {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .maintenance-description {
+            font-size: 0.9rem;
+            color: #525252;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #525252;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-container {
+            margin-top: 1.5rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            color: #0077B6;
+            border-bottom-color: #0077B6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .protocols-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .protocol-card {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1.25rem;
+            border-left: 4px solid #10b981;
+        }
+
+        .protocol-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #525252;
+            margin-bottom: 0.5rem;
+        }
+
+        .protocol-description {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .alert-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: #f59e0b;
+        }
+
+        .alert-content h3 {
+            color: #92400e;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            color: #78350f;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+            .tab-buttons {
+                flex-direction: column;
+            }
+            .tab-button {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item active">⚙️ Equipos</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="lista-equipos.html">Equipos</a>
+                <span>/</span>
+                <span>Detalle de Equipo</span>
+            </div>
+            <div class="admin-badge">
+                👑 Modo Administrador
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-header">
+                <h1>Detalle de Equipo</h1>
+                <p>Información completa y gestión del equipo seleccionado</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">🔍</div>
+                        Información del Equipo
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="navigateTo('lista-equipos')">
+                            ← Volver a Lista
+                        </button>
+                        <button class="btn btn-primary" onclick="editEquipment()">
+                            ✏️ Editar Equipo
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteEquipment()">
+                            🗑️ Eliminar Equipo
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="detail-grid">
+                        <div class="equipment-image" id="equipmentImage">
+                            <!-- La imagen se cargará dinámicamente -->
+                        </div>
+                        <div class="info-section">
+                            <div class="info-group">
+                                <h2 class="info-title" id="equipmentName">Incubadora de CO₂</h2>
+                                <p class="info-subtitle" id="equipmentModel">HERAcell 150i</p>
+                                <div class="status-badge available" id="statusBadge">Disponible</div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="info-label">Información Básica</div>
+                                <div class="specs-grid">
+                                    <div class="spec-item">
+                                        <span class="spec-label">Número de Serie</span>
+                                        <span class="spec-value" id="serialNumber">IC-2023-001</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Categoría</span>
+                                        <span class="spec-value" id="category">Incubadora</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Ubicación</span>
+                                        <span class="spec-value" id="location">Sala de Cultivos A</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Responsable</span>
+                                        <span class="spec-value" id="responsible">Dra. Pilar Lizarazo</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="info-label">Estado y Mantenimiento</div>
+                                <div class="specs-grid">
+                                    <div class="spec-item">
+                                        <span class="spec-label">Estado Actual</span>
+                                        <span class="spec-value" id="currentStatus">Operativo</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Última Calibración</span>
+                                        <span class="spec-value" id="lastCalibration">15/08/2024</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Próximo Mantenimiento</span>
+                                        <span class="spec-value" id="nextMaintenance">15/12/2024</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Horas de Uso</span>
+                                        <span class="spec-value" id="usageHours">1,250 horas</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-container">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" onclick="openTab('specs')">📋 Especificaciones</button>
+                            <button class="tab-button" onclick="openTab('maintenance')">🔧 Mantenimiento</button>
+                            <button class="tab-button" onclick="openTab('protocols')">📄 Protocolos</button>
+                            <button class="tab-button" onclick="openTab('history')">📊 Historial</button>
+                        </div>
+
+                        <div id="specs" class="tab-content active">
+                            <div class="info-group">
+                                <div class="info-label">Especificaciones Técnicas</div>
+                                <div class="info-value" id="specifications">
+                                    <p><strong>Rango de Temperatura:</strong> 5°C a 50°C</p>
+                                    <p><strong>Control de CO₂:</strong> 0% a 20%</p>
+                                    <p><strong>Capacidad:</strong> 150 litros</p>
+                                    <p><strong>Consumo Eléctrico:</strong> 500W</p>
+                                    <p><strong>Dimensiones:</strong> 70cm x 60cm x 90cm</p>
+                                    <p><strong>Peso:</strong> 85 kg</p>
+                                    <p><strong>Interfaz:</strong> Pantalla táctil LCD</p>
+                                    <p><strong>Conectividad:</strong> USB, Ethernet</p>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Observaciones</div>
+                                <div class="info-value" id="observations">
+                                    Equipo en excelentes condiciones. Calibrado recientemente. 
+                                    Requiere mantenimiento preventivo cada 6 meses. 
+                                    Uso exclusivo para cultivos microbianos.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="maintenance" class="tab-content">
+                            <div class="alert-box">
+                                <div class="alert-icon">⚠️</div>
+                                <div class="alert-content">
+                                    <h3>Mantenimiento Programado</h3>
+                                    <p>El próximo mantenimiento preventivo está programado para el <strong>15 de Diciembre de 2024</strong>. Contacte al proveedor con anticipación para coordinar la visita técnica.</p>
+                                </div>
+                            </div>
+
+                            <div class="maintenance-history">
+                                <div class="maintenance-item">
+                                    <div class="maintenance-icon">🔧</div>
+                                    <div class="maintenance-content">
+                                        <div class="maintenance-title">Mantenimiento Preventivo</div>
+                                        <div class="maintenance-date">15 de Junio de 2024 - Realizado por: TecnoLab S.A.S.</div>
+                                        <div class="maintenance-description">
+                                            Cambio de filtros HEPA, calibración de sensores de temperatura y CO₂, 
+                                            limpieza interna completa y verificación de funcionamiento.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="maintenance-item">
+                                    <div class="maintenance-icon">⚡</div>
+                                    <div class="maintenance-content">
+                                        <div class="maintenance-title">Reparación Eléctrica</div>
+                                        <div class="maintenance-date">28 de Marzo de 2024 - Realizado por: Servicio Técnico Interno</div>
+                                        <div class="maintenance-description">
+                                            Reemplazo de fuente de poder y actualización de firmware. 
+                                            El equipo presentaba fallas intermitentes en el encendido.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="maintenance-item">
+                                    <div class="maintenance-icon">🧼</div>
+                                    <div class="maintenance-content">
+                                        <div class="maintenance-title">Limpieza y Calibración</div>
+                                        <div class="maintenance-date">15 de Diciembre de 2023 - Realizado por: TecnoLab S.A.S.</div>
+                                        <div class="maintenance-description">
+                                            Limpieza general, calibración de sensores y verificación de 
+                                            estanqueidad de la cámara. Todas las funciones operativas.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="protocols" class="tab-content">
+                            <div class="info-group">
+                                <div class="info-label">Protocolos Asociados</div>
+                                <div class="protocols-grid">
+                                    <div class="protocol-card">
+                                        <div class="protocol-title">Cultivo de Actinobacterias</div>
+                                        <div class="protocol-description">
+                                            Protocolo para el cultivo y mantenimiento de actinobacterias 
+                                            en condiciones controladas de temperatura y CO₂.
+                                        </div>
+                                    </div>
+                                    <div class="protocol-card">
+                                        <div class="protocol-title">Incuabción de Levaduras</div>
+                                        <div class="protocol-description">
+                                            Procedimiento estandarizado para la incubación de cepas 
+                                            de levadura en medio YPD a 28°C.
+                                        </div>
+                                    </div>
+                                    <div class="protocol-card">
+                                        <div class="protocol-title">Mantenimiento de Cultivos</div>
+                                        <div class="protocol-description">
+                                            Protocolo para el mantenimiento a largo plazo de cultivos 
+                                            microbianos en condiciones controladas.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="history" class="tab-content">
+                            <div class="info-group">
+                                <div class="info-label">Historial de Uso</div>
+                                <div class="maintenance-history">
+                                    <div class="maintenance-item">
+                                        <div class="maintenance-icon">👤</div>
+                                        <div class="maintenance-content">
+                                            <div class="maintenance-title">Uso por Carlos Perea</div>
+                                            <div class="maintenance-date">20 de Octubre de 2024 - 4 horas</div>
+                                            <div class="maintenance-description">
+                                                Cultivo de actinobacterias para proyecto de bioprospección. 
+                                                Temperatura: 28°C, CO₂: 5%.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="maintenance-item">
+                                        <div class="maintenance-icon">👤</div>
+                                        <div class="maintenance-content">
+                                            <div class="maintenance-title">Uso por Gabriela Ramírez</div>
+                                            <div class="maintenance-date">18 de Octubre de 2024 - 6 horas</div>
+                                            <div class="maintenance-description">
+                                                Incubación de levaduras para ensayos de fermentación. 
+                                                Temperatura: 30°C, CO₂: 2%.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="maintenance-item">
+                                        <div class="maintenance-icon">👤</div>
+                                        <div class="maintenance-content">
+                                            <div class="maintenance-title">Uso por Sura Rueda</div>
+                                            <div class="maintenance-date">15 de Octubre de 2024 - 8 horas</div>
+                                            <div class="maintenance-description">
+                                                Mantenimiento de cepas de hongos filamentosos. 
+                                                Temperatura: 25°C, CO₂: 0%.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Datos del equipo (en una implementación real, esto vendría de una API)
+        const equipmentData = {
+            id: 1,
+            name: "Incubadora de CO₂",
+            model: "HERAcell 150i",
+            serialNumber: "IC-2023-001",
+            category: "Incubadora",
+            status: "available",
+            location: "Sala de Cultivos A",
+            responsible: "Dra. Pilar Lizarazo",
+            currentStatus: "Operativo",
+            lastCalibration: "15/08/2024",
+            nextMaintenance: "15/12/2024",
+            usageHours: "1,250 horas",
+            image: "🧫",
+            specifications: `
+                <p><strong>Rango de Temperatura:</strong> 5°C a 50°C</p>
+                <p><strong>Control de CO₂:</strong> 0% a 20%</p>
+                <p><strong>Capacidad:</strong> 150 litros</p>
+                <p><strong>Consumo Eléctrico:</strong> 500W</p>
+                <p><strong>Dimensiones:</strong> 70cm x 60cm x 90cm</p>
+                <p><strong>Peso:</strong> 85 kg</p>
+                <p><strong>Interfaz:</strong> Pantalla táctil LCD</p>
+                <p><strong>Conectividad:</strong> USB, Ethernet</p>
+            `,
+            observations: `
+                Equipo en excelentes condiciones. Calibrado recientemente. 
+                Requiere mantenimiento preventivo cada 6 meses. 
+                Uso exclusivo para cultivos microbianos.
+            `
+        };
+
+        // Cargar datos del equipo al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEquipmentData();
+        });
+
+        // Función para cargar los datos del equipo
+        function loadEquipmentData() {
+            document.getElementById('equipmentName').textContent = equipmentData.name;
+            document.getElementById('equipmentModel').textContent = equipmentData.model;
+            document.getElementById('serialNumber').textContent = equipmentData.serialNumber;
+            document.getElementById('category').textContent = equipmentData.category;
+            document.getElementById('location').textContent = equipmentData.location;
+            document.getElementById('responsible').textContent = equipmentData.responsible;
+            document.getElementById('currentStatus').textContent = equipmentData.currentStatus;
+            document.getElementById('lastCalibration').textContent = equipmentData.lastCalibration;
+            document.getElementById('nextMaintenance').textContent = equipmentData.nextMaintenance;
+            document.getElementById('usageHours').textContent = equipmentData.usageHours;
+            document.getElementById('specifications').innerHTML = equipmentData.specifications;
+            document.getElementById('observations').textContent = equipmentData.observations;
+            
+            // Configurar imagen
+            const equipmentImage = document.getElementById('equipmentImage');
+            equipmentImage.innerHTML = equipmentData.image;
+            
+            // Configurar badge de estado
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.className = `status-badge ${equipmentData.status}`;
+            statusBadge.textContent = getStatusText(equipmentData.status);
+        }
+
+        // Función para obtener texto del estado
+        function getStatusText(status) {
+            const statusMap = {
+                'available': 'Disponible',
+                'in-use': 'En uso',
+                'maintenance': 'En mantenimiento',
+                'out-of-service': 'Fuera de servicio'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Función para cambiar entre pestañas
+        function openTab(tabName) {
+            // Ocultar todas las pestañas
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            // Desactivar todos los botones
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            // Activar la pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activar el botón correspondiente
+            event.currentTarget.classList.add('active');
+        }
+
+        // Funciones de navegación y acciones
+        function navigateTo(page) {
+            alert(`Navegando a: ${page}. En una implementación real, esto cargaría la página correspondiente.`);
+        }
+
+        function editEquipment() {
+            alert(`Editando equipo: ${equipmentData.name}. En una implementación real, esto abriría el formulario de edición.`);
+        }
+
+        function deleteEquipment() {
+            if (confirm(`¿Está seguro de que desea eliminar el equipo "${equipmentData.name}"? Esta acción no se puede deshacer.`)) {
+                alert(`Equipo "${equipmentData.name}" eliminado. En una implementación real, esto eliminaría el equipo de la base de datos.`);
+                navigateTo('lista-equipos');
+            }
+        }
+    </script>
+</body>
+</html>

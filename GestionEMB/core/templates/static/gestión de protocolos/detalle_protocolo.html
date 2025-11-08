@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Protocolo - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .content-area {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .protocol-header {
+            background: linear-gradient(135deg, #0077B6, #00A8E8);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .protocol-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .protocol-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .protocol-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge.validado {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.revision {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.borrador {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .main-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .section-text {
+            color: #525252;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .procedure-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .procedure-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .procedure-list li::before {
+            content: counter(step-counter);
+            background: #0077B6;
+            color: #FFFFFF;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .procedure-list li:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 32px;
+            width: 2px;
+            height: calc(100% - 12px);
+            background: #e5e7eb;
+        }
+
+        .materials-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .materials-list li {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 3px solid #0077B6;
+        }
+
+        .materials-list li::before {
+            content: '▸';
+            color: #0077B6;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            color: #525252;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            padding: 0.4rem 0.85rem;
+            background: #e6f3f9;
+            color: #0077B6;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            background: #e6f3f9;
+            border-color: #0077B6;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.1rem;
+        }
+
+        .file-details h4 {
+            color: #525252;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .file-details p {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .btn-download {
+            padding: 0.5rem 0.85rem;
+            background: #0077B6;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            background: #006399;
+        }
+
+        .timeline {
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 32px;
+            width: 2px;
+            height: calc(100% - 8px);
+            background: #e5e7eb;
+        }
+
+        .timeline-icon {
+            width: 32px;
+            height: 32px;
+            background: #e6f3f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding-top: 0.25rem;
+        }
+
+        .timeline-action {
+            color: #525252;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-meta {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-box {
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #9ca3af;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: #0077B6;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+            transition: all 0.3s;
+            z-index: 50;
+        }
+
+        .print-button:hover {
+            background: #006399;
+            transform: scale(1.1);
+        }
+
+        @media print {
+            .sidebar, .top-bar, .action-buttons, .print-button {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .protocol-header {
+                padding: 2rem 1.5rem;
+            }
+            .protocol-title {
+                font-size: 1.5rem;
+            }
+            .protocol-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item active">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Protocolos</a>
+                <span>/</span>
+                <span>Detalle</span>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="exportarPDF()">📄 Exportar PDF</button>
+                <button class="btn btn-warning" onclick="editarProtocolo()">✏️ Editar</button>
+                <button class="btn btn-success" onclick="validarProtocolo()">✅ Validar</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Protocol Header -->
+            <div class="protocol-header">
+                <div class="header-content">
+                    <div class="status-badge validado">
+                        ✓ Validado
+                    </div>
+                    <h1 class="protocol-title">Aislamiento de Actinobacterias del Cacao</h1>
+                    <div class="protocol-meta">
+                        <div class="meta-item">
+                            <span>👤</span>
+                            <span>Autor: Carlos Perea</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>📅</span>
+                            <span>Creado: 15/08/2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>🔄</span>
+                            <span>Última edición: 20/09/2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>📌</span>
+                            <span>Versión 1.2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Main Column -->
+                <div class="main-column">
+                    <!-- Description -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">📄</div>
+                                Descripción
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="section-text">
+                                Protocolo para aislamiento y cultivo de actinobacterias asociadas a plantaciones de cacao. 
+                                Incluye técnicas de muestreo, aislamiento en medios selectivos y caracterización preliminar. 
+                                Este protocolo ha sido validado y es utilizado regularmente en el laboratorio EM&B para 
+                                estudios de bioprospección y control biológico de patógenos del cacao.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Procedure -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">📖</div>
+                                Procedimiento Detallado
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ol class="procedure-list">
+                                <li>
+                                    <div>
+                                        <strong>Recolección de muestras</strong><br>
+                                        Tomar muestras de suelo rizosférico de plantaciones de cacao, recolectando aproximadamente 100g de suelo a una profundidad de 5-15 cm cerca de las raíces.
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Preparación de diluciones seriadas</strong><br>
+                                        Preparar diluciones seriadas desde 10⁻¹ hasta 10⁻⁶ utilizando solución salina estéril (NaCl 0.85%).
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Siembra en medio selectivo</strong><br>
+                                        Sembrar 100 µL de cada dilución en medio ISP2 suplementado con antibióticos (Nistatina 50 µg/mL, Ácido nalidíxico 25 µg/mL).
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Incubación</strong><br>
+                                        Incubar las placas a 28°C durante 7-14 días en condiciones aerobias.
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Aislamiento de colonias</strong><br>
+                                        Identificar colonias con morfología característica de actinobacterias (colonias secas, duras, con micelio aéreo).
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Purificación</strong><br>
+                                        Realizar resiembras sucesivas hasta obtener cultivos puros.
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Caracterización preliminar</strong><br>
+                                        Observar características morfológicas macroscópicas y microscópicas (tinción de Gram, presencia de esporas).
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <strong>Conservación</strong><br>
+                                        Conservar aislados en glicerol 20% a -80°C para almacenamiento a largo plazo.
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Materials -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">🧪</div>
+                                Materiales y Reactivos
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="materials-list">
+                                <li>Medio ISP2 (Yeast Extract-Malt Extract Agar)</li>
+                                <li>Antibióticos: Nistatina (50 µg/mL), Ácido nalidíxico (25 µg/mL)</li>
+                                <li>Solución salina estéril (NaCl 0.85%)</li>
+                                <li>Tubos de ensayo estériles</li>
+                                <li>Cajas Petri estériles (90mm)</li>
+                                <li>Asa de platino o asas bacteriológicas desechables</li>
+                                <li>Pipetas automáticas y puntas estériles</li>
+                                <li>Incubadora a 28°C</li>
+                                <li>Microscopio óptico</li>
+                                <li>Glicerol estéril 20%</li>
+                                <li>Crioviales de 2 mL</li>
+                                <li>Autoclave</li>
+                                <li>Campana de flujo laminar</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Attached Files -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">📎</div>
+                                Archivos Adjuntos
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="file-list">
+                                <div class="file-item">
+                                    <div class="file-info">
+                                        <div class="file-icon">📄</div>
+                                        <div class="file-details">
+                                            <h4>Diagrama_de_flujo_aislamiento.pdf</h4>
+                                            <p>245 KB • PDF Document</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn-download" onclick="descargarArchivo(1)">⬇ Descargar</button>
+                                </div>
+                                <div class="file-item">
+                                    <div class="file-info">
+                                        <div class="file-icon">🖼️</div>
+                                        <div class="file-details">
+                                            <h4>Imagen_colonia_actinobacteria.jpg</h4>
+                                            <p>1.2 MB • JPG Image</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn-download" onclick="descargarArchivo(2)">⬇ Descargar</button>
+                                </div>
+                                <div class="file-item">
+                                    <div class="file-info">
+                                        <div class="file-icon">📊</div>
+                                        <div class="file-details">
+                                            <h4>Tabla_resultados_aislamiento.xlsx</h4>
+                                            <p>87 KB • Excel Spreadsheet</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn-download" onclick="descargarArchivo(3)">⬇ Descargar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Column -->
+                <div class="sidebar-column">
+                    <!-- Information -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">ℹ️</div>
+                                Información
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Categoría</div>
+                                    <div class="info-value">
+                                        <span class="category-badge">Aislamiento Microbiano</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Estado</div>
+                                    <div class="info-value">
+                                        <span class="status-badge validado">✓ Validado</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Autor</div>
+                                    <div class="info-value">Carlos Perea</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Fecha de creación</div>
+                                    <div class="info-value">15 de Agosto, 2024</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Última actualización</div>
+                                    <div class="info-value">20 de Septiembre, 2024</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Versión actual</div>
+                                    <div class="info-value">1.2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">📊</div>
+                                Estadísticas
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="stats-grid">
+                                <div class="stat-box">
+                                    <div class="stat-value">247</div>
+                                    <div class="stat-label">Vistas</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value">18</div>
+                                    <div class="stat-label">Descargas</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value">5</div>
+                                    <div class="stat-label">Ediciones</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value">3</div>
+                                    <div class="stat-label">Archivos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">🕒</div>
+                                Historial
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">✏️</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-action">Protocolo editado</div>
+                                        <div class="timeline-meta">Carlos Perea • 20/09/2024</div>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">✅</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-action">Estado: Validado</div>
+                                        <div class="timeline-meta">Pilar Lizarazo • 18/08/2024</div>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">📎</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-action">Archivo adjunto</div>
+                                        <div class="timeline-meta">Carlos Perea • 16/08/2024</div>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">✨</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-action">Protocolo creado</div>
+                                        <div class="timeline-meta">Carlos Perea • 15/08/2024</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Protocols -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">🔗</div>
+                                Protocolos Relacionados
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="file-list">
+                                <div class="file-item" style="cursor: pointer;" onclick="verProtocolo(2)">
+                                    <div class="file-info">
+                                        <div class="file-icon">📋</div>
+                                        <div class="file-details">
+                                            <h4>Preparación de Medio ISP2</h4>
+                                            <p>Validado</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="file-item" style="cursor: pointer;" onclick="verProtocolo(4)">
+                                    <div class="file-info">
+                                        <div class="file-icon">📋</div>
+                                        <div class="file-details">
+                                            <h4>Extracción de ADN por CTAB</h4>
+                                            <p>Validado</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">⚡</div>
+                                Acciones Rápidas
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="compartirProtocolo()">
+                                    📤 Compartir Protocolo
+                                </button>
+                                <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="duplicarProtocolo()">
+                                    📄 Duplicar Protocolo
+                                </button>
+                                <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="verVersiones()">
+                                    📚 Ver Versiones Anteriores
+                                </button>
+                                <button class="btn btn-secondary" style="width: 100%; justify-content: center;" onclick="reportarProblema()">
+                                    🚨 Reportar Problema
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Print Button -->
+    <button class="print-button" onclick="window.print()" title="Imprimir protocolo">
+        🖨️
+    </button>
+
+    <script>
+        const protocoloId = 1; // ID del protocolo actual
+
+        // Editar protocolo
+        function editarProtocolo() {
+            window.location.href = `/protocolos/editar/${protocoloId}`;
+            // O para demo:
+            // alert('Redirigiendo a editar protocolo\nConectar con Django');
+        }
+
+        // Validar protocolo
+        function validarProtocolo() {
+            if (confirm('¿Desea marcar este protocolo como VALIDADO?\n\nEsto significa que ha sido revisado y aprobado para uso en el laboratorio.')) {
+                console.log('Validando protocolo ID:', protocoloId);
+                alert('✅ Protocolo validado exitosamente\n\nSe ha registrado en el log de auditoría.\nConectar con Django');
+                // Actualizar estado visualmente
+                location.reload();
+            }
+        }
+
+        // Exportar a PDF
+        function exportarPDF() {
+            alert('Generando PDF del protocolo...\n\nEsta función usará una librería como jsPDF o WeasyPrint desde Django.');
+            // window.location.href = `/protocolos/exportar-pdf/${protocoloId}`;
+        }
+
+        // Descargar archivo adjunto
+        function descargarArchivo(archivoId) {
+            console.log('Descargando archivo ID:', archivoId);
+            alert(`Descargando archivo...\nConectar con Django:\nGET /archivos/descargar/${archivoId}`);
+            // window.location.href = `/archivos/descargar/${archivoId}`;
+        }
+
+        // Ver protocolo relacionado
+        function verProtocolo(id) {
+            window.location.href = `/protocolos/detalle/${id}`;
+            // alert(`Navegando al protocolo ${id}\nConectar con Django`);
+        }
+
+        // Compartir protocolo
+        function compartirProtocolo() {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Aislamiento de Actinobacterias del Cacao',
+                    text: 'Protocolo validado del laboratorio EM&B',
+                    url: url
+                }).catch(() => {
+                    copiarAlPortapapeles(url);
+                });
+            } else {
+                copiarAlPortapapeles(url);
+            }
+        }
+
+        function copiarAlPortapapeles(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('✅ Enlace copiado al portapapeles');
+            });
+        }
+
+        // Duplicar protocolo
+        function duplicarProtocolo() {
+            if (confirm('¿Desea crear una copia de este protocolo?\n\nSe creará un nuevo protocolo en estado "Borrador" con el mismo contenido.')) {
+                console.log('Duplicando protocolo ID:', protocoloId);
+                alert('📄 Protocolo duplicado\n\nSe ha creado una copia en estado "Borrador".\nConectar con Django');
+                // window.location.href = `/protocolos/duplicar/${protocoloId}`;
+            }
+        }
+
+        // Ver versiones anteriores
+        function verVersiones() {
+            alert('Mostrando historial de versiones\nConectar con Django');
+            // window.location.href = `/protocolos/versiones/${protocoloId}`;
+        }
+
+        // Reportar problema
+        function reportarProblema() {
+            const motivo = prompt('Describa el problema encontrado en este protocolo:');
+            if (motivo && motivo.trim()) {
+                console.log('Reporte:', motivo);
+                alert('🚨 Reporte enviado\n\nSe ha notificado al administrador.\nConectar con Django');
+                // Enviar reporte via POST
+            }
+        }
+
+        // Registrar vista del protocolo (analytics)
+        window.addEventListener('load', () => {
+            console.log('Registrando vista del protocolo:', protocoloId);
+            // fetch(`/api/protocolos/${protocoloId}/registrar-vista`, { method: 'POST' });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + P = Imprimir
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+            // Ctrl/Cmd + E = Editar
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                editarProtocolo();
+            }
+            // Ctrl/Cmd + D = Descargar PDF
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                exportarPDF();
+            }
+        });
+
+        // Smooth scroll para enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

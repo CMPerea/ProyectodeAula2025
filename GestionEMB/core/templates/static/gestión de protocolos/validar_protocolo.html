@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar Protocolo - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .content-area {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .validation-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .validation-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .validation-header p {
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .alert-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: #f59e0b;
+        }
+
+        .alert-content h3 {
+            color: #92400e;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            color: #78350f;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .validation-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .protocol-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .preview-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .preview-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .preview-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .preview-content {
+            color: #525252;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .preview-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0077B6;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .meta-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-badge.revision {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .checklist-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .checklist-section {
+            background: #f9fafb;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .checklist-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #525252;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #FFFFFF;
+            border-radius: 6px;
+            border: 1.5px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checklist-item:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .checklist-item.checked {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            margin-top: 0.1rem;
+        }
+
+        .checklist-item.checked .checklist-checkbox {
+            background: #10b981;
+            border-color: #10b981;
+            color: #FFFFFF;
+        }
+
+        .checklist-label {
+            color: #525252;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .checklist-item.checked .checklist-label {
+            color: #065f46;
+        }
+
+        .progress-bar {
+            margin-top: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .validation-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            color: #525252;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            font-family: inherit;
+            min-height: 120px;
+            resize: vertical;
+            transition: all 0.2s;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+        }
+
+        .form-hint {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .signature-box {
+            padding: 1.25rem;
+            background: #f9fafb;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .signature-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .signature-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .signature-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0077B6;
+        }
+
+        .signature-date {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-success:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #0077B6;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+        }
+
+        .success-box p {
+            color: #065f46;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .validation-summary {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .summary-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #525252;
+            margin-bottom: 1rem;
+        }
+
+        .summary-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #FFFFFF;
+            border-radius: 6px;
+        }
+
+        .summary-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .summary-icon.success {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .summary-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .summary-text {
+            color: #525252;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .validation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item active">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Protocolos</a>
+                <span>/</span>
+                <span>Validar Protocolo</span>
+            </div>
+            <div class="admin-badge">
+                👑 Modo Administrador
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="validation-header">
+                <h1>Validación de Protocolo</h1>
+                <p>Revise cuidadosamente el protocolo antes de aprobarlo para uso en el laboratorio</p>
+            </div>
+
+            <div class="alert-box">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h3>Responsabilidad de Validación</h3>
+                    <p>Al validar este protocolo, usted certifica que ha revisado su contenido, procedimientos y exactitud técnica. Los protocolos validados se consideran aprobados para uso oficial en el laboratorio y esta acción quedará registrada en el sistema de auditoría.</p>
+                </div>
+            </div>
+
+            <div class="validation-grid">
+                <!-- Protocol Preview -->
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">📄</div>
+                                Vista Previa del Protocolo
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="protocol-preview">
+                                <div class="preview-section">
+                                    <h2 class="preview-title">Aislamiento de Actinobacterias del Cacao</h2>
+                                    <div class="meta-grid">
+                                        <div class="meta-item">
+                                            <span class="meta-label">Autor</span>
+                                            <span class="meta-value">Carlos Perea</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Categoría</span>
+                                            <span class="meta-value">Aislamiento Microbiano</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Estado Actual</span>
+                                            <span class="status-badge revision">En Revisión</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Fecha Creación</span>
+                                            <span class="meta-value">15/08/2024</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="preview-section">
+                                    <div class="preview-label">Descripción</div>
+                                    <div class="preview-content">
+                                        Protocolo para aislamiento y cultivo de actinobacterias asociadas a plantaciones de cacao. Incluye técnicas de muestreo, aislamiento en medios selectivos y caracterización preliminar.
+                                    </div>
+                                </div>
+
+                                <div class="preview-section">
+                                    <div class="preview-label">Procedimiento (Resumen)</div>
+                                    <div class="preview-content">
+                                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
+                                            <li>Recolección de muestras de suelo rizosférico</li>
+                                            <li>Preparación de diluciones seriadas (10⁻¹ a 10⁻⁶)</li>
+                                            <li>Siembra en medio ISP2 selectivo con antibióticos</li>
+                                            <li>Incubación a 28°C por 7-14 días</li>
+                                            <li>Aislamiento y purificación de colonias</li>
+                                            <li>Caracterización morfológica preliminar</li>
+                                            <li>Conservación en glicerol 20%</li>
+                                        </ol>
+                                    </div>
+                                </div>
+
+                                <div class="preview-section">
+                                    <div class="preview-label">Materiales Clave</div>
+                                    <div class="preview-content">
+                                        Medio ISP2, Antibióticos (Nistatina, Ácido nalidíxico), Tubos estériles, Cajas Petri, Incubadora 28°C, Microscopio óptico, Glicerol 20%, Crioviales
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Panel -->
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">✅</div>
+                                Checklist de Validación
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-box">
+                                <p><strong>Instrucciones:</strong> Marque todos los criterios que cumple el protocolo antes de validar.</p>
+                            </div>
+
+                            <div class="checklist-container">
+                                <!-- Sección 1: Contenido -->
+                                <div class="checklist-section">
+                                    <div class="checklist-section-title">
+                                        📝 Contenido y Claridad
+                                    </div>
+                                    <div class="checklist-items">
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">El título es descriptivo y específico</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">La descripción explica claramente el propósito</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Los procedimientos están completos y ordenados</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Las instrucciones son claras y sin ambigüedades</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección 2: Técnica -->
+                                <div class="checklist-section">
+                                    <div class="checklist-section-title">
+                                        🔬 Precisión Técnica
+                                    </div>
+                                    <div class="checklist-items">
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Todos los materiales están especificados</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Las cantidades y concentraciones son correctas</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Los tiempos y temperaturas están indicados</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">No hay errores técnicos o científicos</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección 3: Seguridad -->
+                                <div class="checklist-section">
+                                    <div class="checklist-section-title">
+                                        🛡️ Seguridad y Buenas Prácticas
+                                    </div>
+                                    <div class="checklist-items">
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Incluye medidas de bioseguridad apropiadas</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Sigue las buenas prácticas de laboratorio</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Contempla el manejo de residuos</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección 4: Documentación -->
+                                <div class="checklist-section">
+                                    <div class="checklist-section-title">
+                                        📎 Documentación
+                                    </div>
+                                    <div class="checklist-items">
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">La categorización es correcta</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">Los archivos adjuntos son relevantes</div>
+                                        </div>
+                                        <div class="checklist-item" onclick="toggleCheck(this)">
+                                            <div class="checklist-checkbox"></div>
+                                            <div class="checklist-label">El formato es consistente y profesional</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="progress-bar">
+                                <div class="progress-label">
+                                    <span>Progreso de Validación</span>
+                                    <span id="progressText">0/14 criterios</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon">💬</div>
+                                Comentarios y Aprobación
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form id="validationForm" class="validation-form">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        Comentarios de Validación
+                                    </label>
+                                    <textarea 
+                                        class="form-textarea" 
+                                        id="comentarios"
+                                        placeholder="Ingrese cualquier observación, sugerencia o comentario sobre el protocolo..."
+                                    ></textarea>
+                                    <p class="form-hint">Opcional: Añada notas que considere relevantes</p>
+                                </div>
+
+                                <div class="signature-box">
+                                    <div class="signature-info">
+                                        <div class="signature-label">Validado por:</div>
+                                        <div class="signature-value">Pilar Ximena Lizarazo</div>
+                                        <div class="signature-label">Rol: Administrador</div>
+                                        <div class="signature-date" id="currentDate"></div>
+                                    </div>
+                                </div>
+
+                                <div class="validation-summary">
+                                    <div class="summary-title">Resumen de Validación</div>
+                                    <div class="summary-items">
+                                        <div class="summary-item">
+                                            <div class="summary-icon success">✓</div>
+                                            <div class="summary-text">Protocolo técnicamente correcto</div>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon success">✓</div>
+                                            <div class="summary-text">Cumple estándares de seguridad</div>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-icon warning" id="checklistWarning">⚠</div>
+                                            <div class="summary-text" id="checklistStatus">Complete el checklist antes de validar</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-secondary" onclick="cancelar()">
+                                        ✕ Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-danger" onclick="rechazar()">
+                                        ↩️ Rechazar
+                                    </button>
+                                    <button type="submit" class="btn btn-success" id="validateBtn" disabled>
+                                        ✅ Validar Protocolo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const protocoloId = 1; // ID del protocolo a validar
+        const totalCriterios = 14;
+        let criteriosCompletados = 0;
+
+        // Fecha actual
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-CO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Toggle checklist items
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            
+            if (element.classList.contains('checked')) {
+                element.querySelector('.checklist-checkbox').innerHTML = '✓';
+                criteriosCompletados++;
+            } else {
+                element.querySelector('.checklist-checkbox').innerHTML = '';
+                criteriosCompletados--;
+            }
+            
+            updateProgress();
+        }
+
+        // Update progress bar and validation button
+        function updateProgress() {
+            const percentage = (criteriosCompletados / totalCriterios) * 100;
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const validateBtn = document.getElementById('validateBtn');
+            const checklistWarning = document.getElementById('checklistWarning');
+            const checklistStatus = document.getElementById('checklistStatus');
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `${criteriosCompletados}/${totalCriterios} criterios`;
+            
+            // Enable validation button only if all criteria are checked
+            if (criteriosCompletados === totalCriterios) {
+                validateBtn.disabled = false;
+                checklistWarning.classList.remove('warning');
+                checklistWarning.classList.add('success');
+                checklistWarning.textContent = '✓';
+                checklistStatus.textContent = 'Todos los criterios verificados';
+            } else {
+                validateBtn.disabled = true;
+                checklistWarning.classList.remove('success');
+                checklistWarning.classList.add('warning');
+                checklistWarning.textContent = '⚠';
+                checklistStatus.textContent = 'Complete el checklist antes de validar';
+            }
+        }
+
+        // Form submission - Validar
+        document.getElementById('validationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (criteriosCompletados < totalCriterios) {
+                alert('⚠️ Debe completar todos los criterios del checklist antes de validar');
+                return;
+            }
+            
+            const confirmacion = confirm(
+                '¿CONFIRMA LA VALIDACIÓN DE ESTE PROTOCOLO?\n\n' +
+                '✓ Todos los criterios han sido verificados\n' +
+                '✓ El protocolo será marcado como "VALIDADO"\n' +
+                '✓ Esta acción quedará registrada en auditoría\n' +
+                '✓ El protocolo estará disponible para uso oficial\n\n' +
+                '¿Desea continuar?'
+            );
+            
+            if (!confirmacion) return;
+            
+            const formData = {
+                protocolo_id: protocoloId,
+                accion: 'validar',
+                comentarios: document.getElementById('comentarios').value,
+                criterios_completados: criteriosCompletados,
+                validador: 'Pilar Ximena Lizarazo',
+                fecha_validacion: new Date().toISOString()
+            };
+            
+            console.log('Datos de validación:', formData);
+            
+            // Simular éxito
+            mostrarExito();
+        });
+
+        // Mostrar mensaje de éxito
+        function mostrarExito() {
+            const content = document.querySelector('.content-area');
+            content.innerHTML = `
+                <div class="validation-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+                    <h1>¡Protocolo Validado Exitosamente!</h1>
+                    <p>El protocolo ha sido aprobado y está disponible para uso en el laboratorio</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="success-box" style="margin-bottom: 1.5rem;">
+                            <p><strong>Acción registrada:</strong> La validación ha sido guardada en el sistema de auditoría con todos los detalles de la revisión.</p>
+                        </div>
+                        
+                        <div class="validation-summary">
+                            <div class="summary-title">Detalles de la Validación</div>
+                            <div class="summary-items">
+                                <div class="summary-item">
+                                    <div class="summary-icon success">📋</div>
+                                    <div class="summary-text">Protocolo: Aislamiento de Actinobacterias del Cacao</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon success">✓</div>
+                                    <div class="summary-text">Estado actualizado a: VALIDADO</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon success">👤</div>
+                                    <div class="summary-text">Validado por: Pilar Ximena Lizarazo</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon success">📅</div>
+                                    <div class="summary-text">Fecha: ${new Date().toLocaleDateString('es-CO')}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-icon success">🔍</div>
+                                    <div class="summary-text">Criterios verificados: ${criteriosCompletados}/${totalCriterios}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons" style="margin-top: 2rem;">
+                            <button class="btn btn-secondary" onclick="window.location.href='/protocolos/lista'">
+                                📋 Ver Lista de Protocolos
+                            </button>
+                            <button class="btn btn-success" onclick="window.location.href='/protocolos/detalle/${protocoloId}'">
+                                👁️ Ver Protocolo Validado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Rechazar protocolo
+        function rechazar() {
+            const motivo = prompt(
+                'RECHAZAR PROTOCOLO\n\n' +
+                'Por favor, indique el motivo del rechazo.\n' +
+                'Esta información será enviada al autor para que realice las correcciones necesarias.'
+            );
+            
+            if (!motivo || motivo.trim() === '') {
+                alert('Debe proporcionar un motivo para rechazar el protocolo');
+                return;
+            }
+            
+            const confirmacion = confirm(
+                '¿CONFIRMA EL RECHAZO DE ESTE PROTOCOLO?\n\n' +
+                'El protocolo volverá a estado "Borrador"\n' +
+                'El autor será notificado con los comentarios\n' +
+                'Esta acción quedará registrada en auditoría\n\n' +
+                '¿Desea continuar?'
+            );
+            
+            if (!confirmacion) return;
+            
+            const formData = {
+                protocolo_id: protocoloId,
+                accion: 'rechazar',
+                motivo_rechazo: motivo,
+                rechazado_por: 'Pilar Ximena Lizarazo',
+                fecha_rechazo: new Date().toISOString()
+            };
+            
+            console.log('Datos de rechazo:', formData);
+            
+            alert(
+                '↩️ Protocolo Rechazado\n\n' +
+                'El protocolo ha sido devuelto al autor para correcciones.\n' +
+                'Se ha enviado una notificación por correo electrónico.\n\n' +
+                'Conectar con Django para guardar cambios.'
+            );
+            
+            // Redirigir
+            setTimeout(() => {
+                window.location.href = '/protocolos/lista';
+            }, 2000);
+        }
+
+        // Cancelar validación
+        function cancelar() {
+            if (criteriosCompletados > 0) {
+                if (!confirm('¿Está seguro de cancelar? Se perderá el progreso del checklist.')) {
+                    return;
+                }
+            }
+            window.history.back();
+        }
+
+        // Warning before leaving if checklist is partially completed
+        window.addEventListener('beforeunload', (e) => {
+            if (criteriosCompletados > 0 && criteriosCompletados < totalCriterios) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Auto-save checklist progress (optional)
+        let autoSaveTimeout;
+        function autoSaveProgress() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                const checklistState = Array.from(document.querySelectorAll('.checklist-item'))
+                    .map(item => item.classList.contains('checked'));
+                console.log('Auto-guardando progreso del checklist:', checklistState);
+                // localStorage puede usarse aquí si es necesario temporalmente
+            }, 1000);
+        }
+
+        // Add auto-save to toggle function
+        const originalToggle = toggleCheck;
+        toggleCheck = function(element) {
+            originalToggle(element);
+            autoSaveProgress();
+        };
+    </script>
+</body>
+</html>

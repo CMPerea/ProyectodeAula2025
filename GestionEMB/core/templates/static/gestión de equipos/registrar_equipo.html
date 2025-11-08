@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Nuevo Equipo - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .content-area {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0077B6, #005a8f);
+            padding: 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            color: #525252;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            font-family: inherit;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: #0077B6;
+            background: #f0f9ff;
+        }
+
+        .file-upload-icon {
+            font-size: 2.5rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-text {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-hint {
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .file-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            min-width: 140px;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #005a8f;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .alert-box {
+            background: #eff6ff;
+            border-left: 4px solid #0077B6;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: #0077B6;
+        }
+
+        .alert-content h3 {
+            color: #1e40af;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            color: #3730a3;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .success-box p {
+            color: #065f46;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item active">⚙️ Equipos</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="lista-equipos.html">Equipos</a>
+                <span>/</span>
+                <span>Registrar Nuevo Equipo</span>
+            </div>
+            <div class="admin-badge">
+                👑 Modo Administrador
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-header">
+                <h1>Registrar Nuevo Equipo</h1>
+                <p>Complete el formulario para agregar un nuevo equipo al inventario del laboratorio</p>
+            </div>
+
+            <div class="alert-box">
+                <div class="alert-icon">ℹ️</div>
+                <div class="alert-content">
+                    <h3>Información importante</h3>
+                    <p>Todos los campos marcados con <span class="required">*</span> son obligatorios. Asegúrese de proporcionar información precisa y completa para facilitar la gestión del equipo.</p>
+                </div>
+            </div>
+
+            <div class="success-box" id="successMessage">
+                <p>✅ Equipo registrado exitosamente. Redirigiendo a la lista de equipos...</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">➕</div>
+                        Formulario de Registro de Equipo
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="equipmentForm" class="form-container">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Nombre del Equipo <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-input" id="equipmentName" placeholder="Ej: Incubadora de CO₂" required>
+                                <p class="form-hint">Nombre descriptivo del equipo</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Modelo <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-input" id="equipmentModel" placeholder="Ej: HERAcell 150i" required>
+                                <p class="form-hint">Modelo específico del fabricante</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Número de Serie <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-input" id="serialNumber" placeholder="Ej: IC-2023-001" required>
+                                <p class="form-hint">Identificador único del equipo</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Categoría <span class="required">*</span>
+                                </label>
+                                <select class="form-select" id="category" required>
+                                    <option value="">Seleccione una categoría</option>
+                                    <option value="incubator">Incubadoras</option>
+                                    <option value="microscope">Microscopios</option>
+                                    <option value="centrifuge">Centrífugas</option>
+                                    <option value="spectrophotometer">Espectrofotómetros</option>
+                                    <option value="autoclave">Autoclaves</option>
+                                    <option value="shaker">Agitadores</option>
+                                    <option value="freezer">Congeladores</option>
+                                    <option value="hood">Campanas de Flujo Laminar</option>
+                                    <option value="other">Otros</option>
+                                </select>
+                                <p class="form-hint">Tipo de equipo según su función</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Estado <span class="required">*</span>
+                                </label>
+                                <select class="form-select" id="status" required>
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="available">Disponible</option>
+                                    <option value="in-use">En uso</option>
+                                    <option value="maintenance">En mantenimiento</option>
+                                    <option value="out-of-service">Fuera de servicio</option>
+                                </select>
+                                <p class="form-hint">Estado actual del equipo</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Ubicación <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-input" id="location" placeholder="Ej: Sala de Cultivos A" required>
+                                <p class="form-hint">Ubicación física en el laboratorio</p>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">
+                                    Especificaciones Técnicas
+                                </label>
+                                <textarea class="form-textarea" id="specifications" placeholder="Describa las características técnicas, capacidades y especificaciones del equipo..."></textarea>
+                                <p class="form-hint">Incluya detalles como rangos de temperatura, velocidad, capacidad, etc.</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Fecha de Próximo Mantenimiento
+                                </label>
+                                <input type="date" class="form-input" id="nextMaintenance">
+                                <p class="form-hint">Fecha programada para el próximo mantenimiento</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Fecha de Última Calibración
+                                </label>
+                                <input type="date" class="form-input" id="lastCalibration">
+                                <p class="form-hint">Fecha de la última calibración realizada</p>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">
+                                    Observaciones
+                                </label>
+                                <textarea class="form-textarea" id="observations" placeholder="Observaciones adicionales sobre el equipo..."></textarea>
+                                <p class="form-hint">Notas importantes, condiciones especiales, etc.</p>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">
+                                    Imagen del Equipo
+                                </label>
+                                <div class="file-upload" id="fileUploadArea">
+                                    <div class="file-upload-icon">📷</div>
+                                    <div class="file-upload-text">Haga clic para subir una imagen del equipo</div>
+                                    <div class="file-upload-hint">Formatos: JPG, PNG, GIF (Máx. 5MB)</div>
+                                </div>
+                                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                                <div class="file-preview" id="filePreview"></div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="cancelRegistration()">
+                                ✕ Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                💾 Guardar Equipo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Manejar la subida de archivos
+        document.getElementById('fileUploadArea').addEventListener('click', function() {
+            document.getElementById('imageUpload').click();
+        });
+
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validar tipo de archivo
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Por favor, seleccione una imagen válida (JPG, PNG o GIF)');
+                    return;
+                }
+
+                // Validar tamaño (5MB máximo)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen es demasiado grande. El tamaño máximo permitido es 5MB.');
+                    return;
+                }
+
+                // Mostrar previsualización
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('filePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Vista previa de la imagen">`;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('equipmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validar formulario
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Recopilar datos del formulario
+            const formData = {
+                name: document.getElementById('equipmentName').value,
+                model: document.getElementById('equipmentModel').value,
+                serialNumber: document.getElementById('serialNumber').value,
+                category: document.getElementById('category').value,
+                status: document.getElementById('status').value,
+                location: document.getElementById('location').value,
+                specifications: document.getElementById('specifications').value,
+                nextMaintenance: document.getElementById('nextMaintenance').value,
+                lastCalibration: document.getElementById('lastCalibration').value,
+                observations: document.getElementById('observations').value,
+                image: document.getElementById('imageUpload').files[0] ? document.getElementById('filePreview').querySelector('img').src : null
+            };
+            
+            console.log('Datos del equipo:', formData);
+            
+            // Simular guardado exitoso
+            simulateSave(formData);
+        });
+
+        // Validar formulario
+        function validateForm() {
+            const requiredFields = [
+                'equipmentName',
+                'equipmentModel',
+                'serialNumber',
+                'category',
+                'status',
+                'location'
+            ];
+            
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e5e7eb';
+                }
+            });
+            
+            if (!isValid) {
+                alert('Por favor, complete todos los campos obligatorios marcados con *');
+            }
+            
+            return isValid;
+        }
+
+        // Simular guardado exitoso
+        function simulateSave(formData) {
+            // Mostrar mensaje de éxito
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Simular redirección después de 2 segundos
+            setTimeout(() => {
+                alert(`Equipo "${formData.name}" registrado exitosamente.\n\nEn una implementación real, los datos se enviarían al servidor y se guardarían en la base de datos.`);
+                // En una implementación real, redirigiríamos a la lista de equipos
+                // window.location.href = 'lista-equipos.html';
+            }, 2000);
+        }
+
+        // Cancelar registro
+        function cancelRegistration() {
+            if (confirm('¿Está seguro de que desea cancelar? Se perderán todos los datos no guardados.')) {
+                // En una implementación real, redirigiríamos a la lista de equipos
+                // window.location.href = 'lista-equipos.html';
+                alert('Registro cancelado. Redirigiendo a la lista de equipos...');
+            }
+        }
+
+        // Limpiar validación al escribir en campos obligatorios
+        const requiredFields = [
+            'equipmentName',
+            'equipmentModel',
+            'serialNumber',
+            'category',
+            'status',
+            'location'
+        ];
+        
+        requiredFields.forEach(fieldId => {
+            document.getElementById(fieldId).addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.style.borderColor = '#e5e7eb';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

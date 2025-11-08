@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title h1 {
+            color: #525252;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .btn-new {
+            padding: 0.75rem 1.5rem;
+            background: #0077B6;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-new:hover {
+            background: #006399;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        /* Messages */
+        .messages {
+            padding: 0 2rem;
+            margin-top: 1rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: #FFFFFF;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 0.65rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .btn-filter {
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filter.primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-filter.primary:hover {
+            background: #006399;
+        }
+
+        /* Users Table */
+        .users-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .users-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #525252;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .users-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        .users-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .users-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0077B6, #00A8E8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-details h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0077B6;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge.student {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            text-decoration: none;
+        }
+
+        .btn-action.edit {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .btn-action.edit:hover {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-action.toggle {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .btn-action.toggle:hover {
+            background: #4f46e5;
+            color: #FFFFFF;
+        }
+
+        .btn-action.delete {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .btn-action.delete:hover {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="{% url 'dashboard' %}" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="{% url 'listar_usuarios' %}" class="nav-item active">👥 Usuarios</a>
+        <a href="#" class="nav-item">🔍 Auditoría</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Gestión de Usuarios</h1>
+            </div>
+            <a href="{% url 'crear_usuario' %}" class="btn-new">
+                ➕ Nuevo Usuario
+            </a>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-section">
+                <form method="GET">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Buscar</label>
+                            <input type="text" name="q" class="filter-input" placeholder="Nombre, usuario, email..." value="{{ query }}">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Rol</label>
+                            <select name="rol" class="filter-select">
+                                <option value="">Todos los roles</option>
+                                <option value="administrador" {% if rol_filter == 'administrador' %}selected{% endif %}>Administrador</option>
+                                <option value="estudiante" {% if rol_filter == 'estudiante' %}selected{% endif %}>Estudiante</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Estado</label>
+                            <select name="estado" class="filter-select">
+                                <option value="">Todos</option>
+                                <option value="activo" {% if estado_filter == 'activo' %}selected{% endif %}>Activo</option>
+                                <option value="inactivo" {% if estado_filter == 'inactivo' %}selected{% endif %}>Inactivo</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-filter primary">Buscar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Users Table -->
+            <div class="users-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        {{ usuario.first_name.0|upper }}{{ usuario.last_name.0|upper }}
+                                    </div>
+                                    <div class="user-details">
+                                        <h4>{{ usuario.get_full_name|default:usuario.username }}</h4>
+                                        <p>@{{ usuario.username }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ usuario.email }}</td>
+                            <td>
+                                <span class="badge {% if usuario.perfil.rol == 'administrador' %}admin{% else %}student{% endif %}">
+                                    {{ usuario.perfil.get_rol_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if usuario.perfil.activo %}active{% else %}inactive{% endif %}">
+                                    {% if usuario.perfil.activo %}Activo{% else %}Inactivo{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ usuario.perfil.fecha_creacion|date:"d/m/Y" }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'editar_usuario' usuario.id %}" class="btn-action edit" title="Editar">✏️</a>
+                                    <a href="{% url 'activar_desactivar_usuario' usuario.id %}" class="btn-action toggle" title="{% if usuario.perfil.activo %}Desactivar{% else %}Activar{% endif %}">
+                                        {% if usuario.perfil.activo %}🔒{% else %}🔓{% endif %}
+                                    </a>
+                                    <a href="{% url 'eliminar_usuario' usuario.id %}" class="btn-action delete" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar este usuario?')">🗑️</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem; color: #9ca3af;">
+                                No se encontraron usuarios
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

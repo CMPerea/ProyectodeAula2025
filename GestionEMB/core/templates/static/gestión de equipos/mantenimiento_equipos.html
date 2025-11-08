@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Mantenimiento - Sistema EM&B</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #525252;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #0077B6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h2 {
+            color: #0077B6;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #555555;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #0077B6;
+        }
+
+        .nav-item.active {
+            background: #e6f3f9;
+            color: #0077B6;
+            border-right: 3px solid #0077B6;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #FFFFFF;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #0077B6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .content-area {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0077B6, #005a8f);
+            padding: 2.5rem;
+            border-radius: 16px;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            opacity: 0.95;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: #e6f3f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0077B6;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #FFFFFF;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary {
+            background: #0077B6;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #005a8f;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #525252;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: #FFFFFF;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .stat-icon.success {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .stat-icon.danger {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .stat-icon.info {
+            background: #e6f3f9;
+            color: #0077B6;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #525252;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .tabs-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #0077B6;
+            border-bottom-color: #0077B6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .maintenance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .maintenance-card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .maintenance-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .maintenance-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .maintenance-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0077B6;
+        }
+
+        .maintenance-status {
+            display: inline-flex;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-scheduled {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .maintenance-body {
+            padding: 1.25rem;
+        }
+
+        .maintenance-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+            color: #525252;
+            font-weight: 600;
+        }
+
+        .maintenance-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .maintenance-actions .btn {
+            flex: 1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .maintenance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .maintenance-table th,
+        .maintenance-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .maintenance-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #525252;
+            font-size: 0.9rem;
+        }
+
+        .maintenance-table td {
+            font-size: 0.9rem;
+            color: #525252;
+        }
+
+        .maintenance-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            background: #FFFFFF;
+            min-width: 180px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #0077B6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #525252;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: #f59e0b;
+        }
+
+        .alert-content h3 {
+            color: #92400e;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            color: #78350f;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .calendar-view {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .calendar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #525252;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-day-header {
+            background: #f9fafb;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: #525252;
+            font-size: 0.85rem;
+        }
+
+        .calendar-day {
+            background: #FFFFFF;
+            padding: 0.75rem;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .calendar-day.other-month {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .maintenance-event {
+            background: #e6f3f9;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            color: #0077B6;
+            cursor: pointer;
+        }
+
+        .maintenance-event.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .maintenance-event.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Estilos del Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0077B6;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #525252;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #525252;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #525252;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #0077B6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.08);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .maintenance-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-filters {
+                flex-direction: column;
+            }
+            .search-box {
+                min-width: 100%;
+            }
+            .maintenance-grid {
+                grid-template-columns: 1fr;
+            }
+            .tabs-header {
+                flex-direction: column;
+            }
+            .tab {
+                text-align: left;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔬</div>
+            <div class="logo-text">
+                <h2>EM&B</h2>
+            </div>
+        </div>
+        <a href="#" class="nav-item">🏠 Dashboard</a>
+        <a href="#" class="nav-item">📋 Protocolos</a>
+        <a href="#" class="nav-item">🦠 Organismos</a>
+        <a href="#" class="nav-item">⚙️ Equipos</a>
+        <a href="#" class="nav-item active">🔧 Mantenimiento</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="breadcrumb">
+                <a href="#">Dashboard</a>
+                <span>/</span>
+                <a href="#">Equipos</a>
+                <span>/</span>
+                <span>Gestión de Mantenimiento</span>
+            </div>
+            <div class="admin-badge">
+                👑 Modo Administrador
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-header">
+                <h1>Gestión de Mantenimiento</h1>
+                <p>Programe, realice y supervise el mantenimiento de todos los equipos del laboratorio</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        ⚠️
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="pendingCount">5</div>
+                        <div class="stat-label">Mantenimientos Pendientes</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        🔴
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="overdueCount">2</div>
+                        <div class="stat-label">Mantenimientos Vencidos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        ✅
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="completedCount">24</div>
+                        <div class="stat-label">Mantenimientos Completados</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        📅
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="scheduledCount">8</div>
+                        <div class="stat-label">Programados este Mes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h3>Mantenimientos Urgentes</h3>
+                    <p>Hay <strong>2 mantenimientos vencidos</strong> que requieren atención inmediata. Revise la sección "Mantenimientos Vencidos" para más detalles.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">🔧</div>
+                        Gestión de Mantenimientos
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="openNewMaintenanceModal()">
+                            ➕ Nuevo Mantenimiento
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tabs-container">
+                        <div class="tabs-header">
+                            <button class="tab active" onclick="openTab('scheduled')">📅 Programados</button>
+                            <button class="tab" onclick="openTab('in-progress')">🔧 En Progreso</button>
+                            <button class="tab" onclick="openTab('completed')">✅ Completados</button>
+                            <button class="tab" onclick="openTab('overdue')">🔴 Vencidos</button>
+                            <button class="tab" onclick="openTab('calendar')">🗓️ Calendario</button>
+                        </div>
+
+                        <div id="scheduled" class="tab-content active">
+                            <div class="search-filters">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" class="search-input" id="searchScheduled" placeholder="Buscar mantenimientos programados..." onkeyup="filterMaintenance('scheduled')">
+                                </div>
+                                <select class="filter-select" id="equipmentFilterScheduled" onchange="filterMaintenance('scheduled')">
+                                    <option value="">Todos los equipos</option>
+                                    <option value="incubator">Incubadoras</option>
+                                    <option value="microscope">Microscopios</option>
+                                    <option value="centrifuge">Centrífugas</option>
+                                </select>
+                            </div>
+
+                            <div class="maintenance-grid" id="scheduledGrid">
+                                <!-- Mantenimientos programados se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <div id="in-progress" class="tab-content">
+                            <div class="search-filters">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" class="search-input" id="searchInProgress" placeholder="Buscar mantenimientos en progreso..." onkeyup="filterMaintenance('in-progress')">
+                                </div>
+                                <select class="filter-select" id="equipmentFilterInProgress" onchange="filterMaintenance('in-progress')">
+                                    <option value="">Todos los equipos</option>
+                                    <option value="incubator">Incubadoras</option>
+                                    <option value="microscope">Microscopios</option>
+                                    <option value="centrifuge">Centrífugas</option>
+                                </select>
+                            </div>
+
+                            <div class="maintenance-grid" id="inProgressGrid">
+                                <!-- Mantenimientos en progreso se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <div id="completed" class="tab-content">
+                            <div class="search-filters">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" class="search-input" id="searchCompleted" placeholder="Buscar mantenimientos completados..." onkeyup="filterMaintenance('completed')">
+                                </div>
+                                <select class="filter-select" id="equipmentFilterCompleted" onchange="filterMaintenance('completed')">
+                                    <option value="">Todos los equipos</option>
+                                    <option value="incubator">Incubadoras</option>
+                                    <option value="microscope">Microscopios</option>
+                                    <option value="centrifuge">Centrífugas</option>
+                                </select>
+                            </div>
+
+                            <div class="table-container">
+                                <table class="maintenance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Equipo</th>
+                                            <th>Tipo de Mantenimiento</th>
+                                            <th>Fecha Programada</th>
+                                            <th>Fecha Completado</th>
+                                            <th>Técnico</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="completedTable">
+                                        <!-- Datos de mantenimientos completados se cargarán aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="overdue" class="tab-content">
+                            <div class="maintenance-grid" id="overdueGrid">
+                                <!-- Mantenimientos vencidos se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <div id="calendar" class="tab-content">
+                            <div class="calendar-view">
+                                <div class="calendar-header">
+                                    <div class="calendar-nav">
+                                        <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">← Mes Anterior</button>
+                                        <h2 class="calendar-title" id="calendarTitle">Octubre 2024</h2>
+                                        <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">Mes Siguiente →</button>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="goToToday()">Hoy</button>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid">
+                                    <!-- Calendario se generará dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para Nuevo Mantenimiento -->
+    <div class="modal-overlay" id="newMaintenanceModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">➕ Nuevo Mantenimiento</h2>
+                <button class="modal-close" onclick="closeNewMaintenanceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="newMaintenanceForm">
+                    <div class="form-group">
+                        <label class="form-label" for="equipmentSelect">Equipo</label>
+                        <select class="form-control" id="equipmentSelect" required>
+                            <option value="">Seleccione un equipo</option>
+                            <option value="1">Incubadora de CO₂ - HERAcell 150i</option>
+                            <option value="2">Microscopio Invertido - Olympus IX73</option>
+                            <option value="3">Centrífuga Refrigerada - Eppendorf 5430 R</option>
+                            <option value="4">Espectrofotómetro UV-Vis - Thermo NanoDrop One</option>
+                            <option value="5">Autoclave de Vapor - Tuttnauer 3870EA</option>
+                            <option value="6">Agitador Orbital - New Brunswick Innova 42</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="maintenanceType">Tipo de Mantenimiento</label>
+                        <select class="form-control" id="maintenanceType" required>
+                            <option value="">Seleccione un tipo</option>
+                            <option value="preventivo">Preventivo</option>
+                            <option value="correctivo">Correctivo</option>
+                            <option value="calibracion">Calibración</option>
+                            <option value="emergencia">Emergencia</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="scheduledDate">Fecha Programada</label>
+                            <input type="date" class="form-control" id="scheduledDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dueDate">Fecha de Vencimiento</label>
+                            <input type="date" class="form-control" id="dueDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="technicianSelect">Técnico Responsable</label>
+                        <select class="form-control" id="technicianSelect" required>
+                            <option value="">Seleccione un técnico</option>
+                            <option value="Carlos Perea">Carlos Perea</option>
+                            <option value="Gabriela Ramírez">Gabriela Ramírez</option>
+                            <option value="TecnoLab S.A.S.">TecnoLab S.A.S.</option>
+                            <option value="Servicio Técnico Interno">Servicio Técnico Interno</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="estimatedHours">Horas Estimadas</label>
+                        <input type="number" class="form-control" id="estimatedHours" min="1" max="24" value="2" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="description">Descripción del Mantenimiento</label>
+                        <textarea class="form-control" id="description" rows="3" placeholder="Describa las actividades a realizar durante el mantenimiento..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="notes">Notas Adicionales</label>
+                        <textarea class="form-control" id="notes" rows="2" placeholder="Agregue cualquier información adicional relevante..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeNewMaintenanceModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Mantenimiento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo para mantenimientos
+        const maintenanceData = [
+            {
+                id: 1,
+                equipmentId: 1,
+                equipmentName: "Incubadora de CO₂",
+                equipmentModel: "HERAcell 150i",
+                type: "Preventivo",
+                description: "Mantenimiento preventivo trimestral. Cambio de filtros HEPA, calibración de sensores.",
+                scheduledDate: "2024-10-25",
+                dueDate: "2024-10-25",
+                completedDate: null,
+                status: "scheduled",
+                technician: "TecnoLab S.A.S.",
+                priority: "medium",
+                estimatedHours: 4,
+                actualHours: null,
+                cost: 350000,
+                notes: ""
+            },
+            {
+                id: 2,
+                equipmentId: 2,
+                equipmentName: "Microscopio Invertido",
+                equipmentModel: "Olympus IX73",
+                type: "Correctivo",
+                description: "Reparación de sistema de iluminación. Reemplazo de lámpara halógena.",
+                scheduledDate: "2024-10-20",
+                dueDate: "2024-10-18",
+                completedDate: null,
+                status: "overdue",
+                technician: "Servicio Técnico Interno",
+                priority: "high",
+                estimatedHours: 2,
+                actualHours: null,
+                cost: 120000,
+                notes: "Urgente: Equipo fuera de servicio"
+            },
+            {
+                id: 3,
+                equipmentId: 3,
+                equipmentName: "Centrífuga Refrigerada",
+                equipmentModel: "Eppendorf 5430 R",
+                type: "Preventivo",
+                description: "Lubricación de rodamientos, verificación de sistema de refrigeración.",
+                scheduledDate: "2024-10-22",
+                dueDate: "2024-10-22",
+                completedDate: null,
+                status: "in-progress",
+                technician: "Carlos Perea",
+                priority: "medium",
+                estimatedHours: 3,
+                actualHours: 1.5,
+                cost: 0,
+                notes: "En espera de repuesto para sensor de temperatura"
+            },
+            {
+                id: 4,
+                equipmentId: 4,
+                equipmentName: "Espectrofotómetro UV-Vis",
+                equipmentModel: "Thermo NanoDrop One",
+                type: "Calibración",
+                description: "Calibración anual según protocolo del fabricante.",
+                scheduledDate: "2024-10-15",
+                dueDate: "2024-10-15",
+                completedDate: "2024-10-15",
+                status: "completed",
+                technician: "Gabriela Ramírez",
+                priority: "low",
+                estimatedHours: 2,
+                actualHours: 1.75,
+                cost: 0,
+                notes: "Calibración exitosa, certificado generado"
+            },
+            {
+                id: 5,
+                equipmentId: 5,
+                equipmentName: "Autoclave de Vapor",
+                equipmentModel: "Tuttnauer 3870EA",
+                type: "Preventivo",
+                description: "Limpieza de cámaras, verificación de válvulas de seguridad.",
+                scheduledDate: "2024-11-05",
+                dueDate: "2024-11-05",
+                completedDate: null,
+                status: "scheduled",
+                technician: "TecnoLab S.A.S.",
+                priority: "medium",
+                estimatedHours: 3,
+                actualHours: null,
+                cost: 280000,
+                notes: ""
+            },
+            {
+                id: 6,
+                equipmentId: 6,
+                equipmentName: "Agitador Orbital",
+                equipmentModel: "New Brunswick Innova 42",
+                type: "Correctivo",
+                description: "Ajuste de velocidad, calibración de controlador de temperatura.",
+                scheduledDate: "2024-10-18",
+                dueDate: "2024-10-16",
+                completedDate: null,
+                status: "overdue",
+                technician: "Servicio Técnico Interno",
+                priority: "high",
+                estimatedHours: 2,
+                actualHours: null,
+                cost: 0,
+                notes: "Problema intermitente en control de temperatura"
+            }
+        ];
+
+        // Variables para el calendario
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderMaintenanceCards();
+            renderCalendar();
+            
+            // Configurar el formulario de nuevo mantenimiento
+            const form = document.getElementById('newMaintenanceForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveNewMaintenance();
+            });
+            
+            // Establecer fecha mínima como hoy para las fechas
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('scheduledDate').min = today;
+            document.getElementById('dueDate').min = today;
+            
+            // Por defecto, establecer la fecha de vencimiento igual a la programada
+            document.getElementById('scheduledDate').addEventListener('change', function() {
+                const scheduledDate = this.value;
+                if (scheduledDate && !document.getElementById('dueDate').value) {
+                    document.getElementById('dueDate').value = scheduledDate;
+                }
+            });
+        });
+
+        // Abrir modal de nuevo mantenimiento
+        function openNewMaintenanceModal() {
+            const modal = document.getElementById('newMaintenanceModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        }
+
+        // Cerrar modal de nuevo mantenimiento
+        function closeNewMaintenanceModal() {
+            const modal = document.getElementById('newMaintenanceModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; // Restaurar scroll del body
+            
+            // Limpiar el formulario
+            document.getElementById('newMaintenanceForm').reset();
+        }
+
+        // Guardar nuevo mantenimiento
+        function saveNewMaintenance() {
+            const form = document.getElementById('newMaintenanceForm');
+            
+            // Validar formulario
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Obtener valores del formulario
+            const equipmentSelect = document.getElementById('equipmentSelect');
+            const equipmentText = equipmentSelect.options[equipmentSelect.selectedIndex].text;
+            const equipmentParts = equipmentText.split(' - ');
+            
+            const newMaintenance = {
+                id: maintenanceData.length + 1,
+                equipmentId: parseInt(equipmentSelect.value),
+                equipmentName: equipmentParts[0],
+                equipmentModel: equipmentParts[1],
+                type: document.getElementById('maintenanceType').value,
+                description: document.getElementById('description').value,
+                scheduledDate: document.getElementById('scheduledDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                completedDate: null,
+                status: "scheduled",
+                technician: document.getElementById('technicianSelect').value,
+                priority: "medium",
+                estimatedHours: parseInt(document.getElementById('estimatedHours').value),
+                actualHours: null,
+                cost: 0,
+                notes: document.getElementById('notes').value
+            };
+            
+            // Agregar a los datos
+            maintenanceData.push(newMaintenance);
+            
+            // Actualizar la interfaz
+            updateStats();
+            renderMaintenanceCards();
+            
+            // Cerrar el modal
+            closeNewMaintenanceModal();
+            
+            // Mostrar mensaje de éxito
+            alert('✅ Mantenimiento creado exitosamente');
+            
+            // Cambiar a la pestaña de programados
+            openTab('scheduled');
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const pending = maintenanceData.filter(m => m.status === 'scheduled' || m.status === 'in-progress').length;
+            const overdue = maintenanceData.filter(m => m.status === 'overdue').length;
+            const completed = maintenanceData.filter(m => m.status === 'completed').length;
+            const scheduledThisMonth = maintenanceData.filter(m => {
+                const scheduledDate = new Date(m.scheduledDate);
+                return scheduledDate.getMonth() === currentDate.getMonth() && 
+                       scheduledDate.getFullYear() === currentDate.getFullYear();
+            }).length;
+
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('overdueCount').textContent = overdue;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('scheduledCount').textContent = scheduledThisMonth;
+        }
+
+        // Renderizar tarjetas de mantenimiento
+        function renderMaintenanceCards() {
+            renderScheduledMaintenance();
+            renderInProgressMaintenance();
+            renderCompletedMaintenance();
+            renderOverdueMaintenance();
+        }
+
+        // Renderizar mantenimientos programados
+        function renderScheduledMaintenance() {
+            const scheduled = maintenanceData.filter(m => m.status === 'scheduled');
+            const grid = document.getElementById('scheduledGrid');
+            
+            if (scheduled.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">📅</div>
+                        <h3>No hay mantenimientos programados</h3>
+                        <p>No se encontraron mantenimientos programados para mostrar.</p>
+                        <button class="btn btn-primary" onclick="openNewMaintenanceModal()">
+                            ➕ Programar Mantenimiento
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = scheduled.map(maintenance => `
+                <div class="maintenance-card">
+                    <div class="maintenance-header">
+                        <div class="maintenance-title">${maintenance.equipmentName}</div>
+                        <span class="maintenance-status status-scheduled">Programado</span>
+                    </div>
+                    <div class="maintenance-body">
+                        <div class="maintenance-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${maintenance.equipmentModel}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Tipo:</span>
+                                <span class="info-value">${maintenance.type}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Fecha Programada:</span>
+                                <span class="info-value">${formatDate(maintenance.scheduledDate)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Técnico:</span>
+                                <span class="info-value">${maintenance.technician}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Duración Estimada:</span>
+                                <span class="info-value">${maintenance.estimatedHours} horas</span>
+                            </div>
+                        </div>
+                        <div class="maintenance-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewMaintenance(${maintenance.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="startMaintenance(${maintenance.id})">
+                                🔧 Iniciar
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="rescheduleMaintenance(${maintenance.id})">
+                                📅 Reprogramar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar mantenimientos en progreso
+        function renderInProgressMaintenance() {
+            const inProgress = maintenanceData.filter(m => m.status === 'in-progress');
+            const grid = document.getElementById('inProgressGrid');
+            
+            if (inProgress.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🔧</div>
+                        <h3>No hay mantenimientos en progreso</h3>
+                        <p>Todos los mantenimientos programados están completados o pendientes.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = inProgress.map(maintenance => `
+                <div class="maintenance-card">
+                    <div class="maintenance-header">
+                        <div class="maintenance-title">${maintenance.equipmentName}</div>
+                        <span class="maintenance-status status-in-progress">En Progreso</span>
+                    </div>
+                    <div class="maintenance-body">
+                        <div class="maintenance-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${maintenance.equipmentModel}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Tipo:</span>
+                                <span class="info-value">${maintenance.type}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Fecha Inicio:</span>
+                                <span class="info-value">${formatDate(maintenance.scheduledDate)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Técnico:</span>
+                                <span class="info-value">${maintenance.technician}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Progreso:</span>
+                                <span class="info-value">${Math.round((maintenance.actualHours / maintenance.estimatedHours) * 100)}%</span>
+                            </div>
+                        </div>
+                        <div class="maintenance-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewMaintenance(${maintenance.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-success btn-sm" onclick="completeMaintenance(${maintenance.id})">
+                                ✅ Completar
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="addProgressNote(${maintenance.id})">
+                                📝 Nota
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar mantenimientos completados
+        function renderCompletedMaintenance() {
+            const completed = maintenanceData.filter(m => m.status === 'completed');
+            const table = document.getElementById('completedTable');
+            
+            if (completed.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">
+                            No hay mantenimientos completados para mostrar.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            table.innerHTML = completed.map(maintenance => `
+                <tr>
+                    <td>
+                        <div><strong>${maintenance.equipmentName}</strong></div>
+                        <div style="font-size: 0.85rem; color: #6b7280;">${maintenance.equipmentModel}</div>
+                    </td>
+                    <td>${maintenance.type}</td>
+                    <td>${formatDate(maintenance.scheduledDate)}</td>
+                    <td>${formatDate(maintenance.completedDate)}</td>
+                    <td>${maintenance.technician}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="viewMaintenance(${maintenance.id})">
+                            👁️ Ver
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Renderizar mantenimientos vencidos
+        function renderOverdueMaintenance() {
+            const overdue = maintenanceData.filter(m => m.status === 'overdue');
+            const grid = document.getElementById('overdueGrid');
+            
+            if (overdue.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">✅</div>
+                        <h3>No hay mantenimientos vencidos</h3>
+                        <p>¡Excelente! Todos los mantenimientos están al día.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = overdue.map(maintenance => `
+                <div class="maintenance-card">
+                    <div class="maintenance-header">
+                        <div class="maintenance-title">${maintenance.equipmentName}</div>
+                        <span class="maintenance-status status-overdue">Vencido</span>
+                    </div>
+                    <div class="maintenance-body">
+                        <div class="maintenance-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${maintenance.equipmentModel}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Tipo:</span>
+                                <span class="info-value">${maintenance.type}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Fecha Vencimiento:</span>
+                                <span class="info-value" style="color: #ef4444;">${formatDate(maintenance.dueDate)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Días de Retraso:</span>
+                                <span class="info-value" style="color: #ef4444;">
+                                    ${Math.floor((new Date() - new Date(maintenance.dueDate)) / (1000 * 60 * 60 * 24))} días
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Prioridad:</span>
+                                <span class="info-value" style="color: #ef4444;">ALTA</span>
+                            </div>
+                        </div>
+                        <div class="maintenance-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewMaintenance(${maintenance.id})">
+                                👁️ Ver
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="startMaintenance(${maintenance.id})">
+                                🔧 Iniciar Urgente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar calendario
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarTitle = document.getElementById('calendarTitle');
+            
+            // Configurar título del calendario
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            calendarTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Obtener primer día del mes y cantidad de días
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay(); // 0 = Domingo, 1 = Lunes, etc.
+            
+            // Generar encabezados de días
+            let calendarHTML = '';
+            const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+            dayNames.forEach(day => {
+                calendarHTML += `<div class="calendar-day-header">${day}</div>`;
+            });
+            
+            // Días del mes anterior
+            const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+            for (let i = startingDay - 1; i >= 0; i--) {
+                const day = prevMonthLastDay - i;
+                calendarHTML += `<div class="calendar-day other-month">${day}</div>`;
+            }
+            
+            // Días del mes actual
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const maintenanceOnDay = maintenanceData.filter(m => 
+                    m.scheduledDate === dateStr || 
+                    (m.completedDate === dateStr && m.status === 'completed')
+                );
+                
+                let dayClasses = "calendar-day";
+                if (new Date().toDateString() === new Date(currentYear, currentMonth, day).toDateString()) {
+                    dayClasses += " current-day";
+                }
+                
+                calendarHTML += `<div class="${dayClasses}">`;
+                calendarHTML += `<div class="day-number">${day}</div>`;
+                
+                maintenanceOnDay.forEach(maintenance => {
+                    let eventClass = "maintenance-event";
+                    if (maintenance.status === 'overdue') {
+                        eventClass += " danger";
+                    } else if (maintenance.status === 'scheduled') {
+                        eventClass += " warning";
+                    }
+                    
+                    calendarHTML += `<div class="${eventClass}" onclick="viewMaintenance(${maintenance.id})">`;
+                    calendarHTML += `${maintenance.equipmentName}`;
+                    calendarHTML += `</div>`;
+                });
+                
+                calendarHTML += `</div>`;
+            }
+            
+            // Días del siguiente mes
+            const totalCells = 42; // 6 semanas * 7 días
+            const remainingCells = totalCells - (startingDay + daysInMonth);
+            for (let day = 1; day <= remainingCells; day++) {
+                calendarHTML += `<div class="calendar-day other-month">${day}</div>`;
+            }
+            
+            calendarGrid.innerHTML = calendarHTML;
+        }
+
+        // Cambiar mes en el calendario
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        // Ir a la fecha actual en el calendario
+        function goToToday() {
+            currentDate = new Date();
+            currentMonth = currentDate.getMonth();
+            currentYear = currentDate.getFullYear();
+            renderCalendar();
+        }
+
+        // Funciones de utilidad
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('es-CO', options);
+        }
+
+        // Cambiar entre pestañas
+        function openTab(tabName) {
+            // Ocultar todas las pestañas
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            // Desactivar todos los botones
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+
+            // Activar la pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activar el botón correspondiente
+            event.currentTarget.classList.add('active');
+        }
+
+        function viewMaintenance(id) {
+            alert(`Viendo detalles del mantenimiento ID: ${id}`);
+        }
+
+        function startMaintenance(id) {
+            if (confirm("¿Está seguro de que desea iniciar este mantenimiento?")) {
+                alert(`Mantenimiento ID: ${id} iniciado.`);
+                // En una implementación real, actualizaríamos el estado en la base de datos
+            }
+        }
+
+        function completeMaintenance(id) {
+            if (confirm("¿Está seguro de que desea marcar este mantenimiento como completado?")) {
+                alert(`Mantenimiento ID: ${id} completado.`);
+                // En una implementación real, actualizaríamos el estado en la base de datos
+            }
+        }
+
+        function rescheduleMaintenance(id) {
+            alert(`Reprogramando mantenimiento ID: ${id}`);
+        }
+
+        function addProgressNote(id) {
+            alert(`Agregando nota al mantenimiento ID: ${id}`);
+        }
+
+        // Filtrar mantenimientos
+        function filterMaintenance(type) {
+            // En una implementación real, esto filtraría los mantenimientos según los criterios
+            console.log(`Filtrando mantenimientos de tipo: ${type}`);
+        }
+    </script>
+</body>
+</html>

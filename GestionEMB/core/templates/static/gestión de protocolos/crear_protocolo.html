@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    {% load static %}
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Protocolo - Sistema EM&B</title>
@@ -534,8 +532,6 @@
 
         <!-- Form Container -->
         <div class="form-container">
-            <!-- ARIA live region for notifications -->
-            <div id="notification" aria-live="polite" style="margin-bottom:1rem;color:#ef4444;font-weight:600;"></div>
             <form id="protocolForm" class="form-card">
                 <!-- Información Básica -->
                 <div class="form-section">
@@ -739,9 +735,6 @@
     </main>
 
     <script>
-        // Configuración
-        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
         // Character counter
         const tituloInput = document.getElementById('titulo');
         const tituloCounter = document.getElementById('tituloCounter');
@@ -779,21 +772,13 @@
 
         function handleFiles(files) {
             Array.from(files).forEach(file => {
-                if (file.size > MAX_FILE_SIZE) {
-                    showNotification(`El archivo ${file.name} excede el tamaño máximo de ${(MAX_FILE_SIZE / (1024 * 1024)).toFixed(0)}MB`);
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`El archivo ${file.name} excede el tamaño máximo de 10MB`);
                     return;
                 }
                 uploadedFiles.push(file);
                 addFileToList(file);
             });
-        }
-
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            setTimeout(() => {
-                notification.textContent = '';
-            }, 5000);
         }
 
         function addFileToList(file) {
@@ -839,12 +824,12 @@
             };
 
             console.log('Datos del protocolo:', formData);
-            showNotification('Protocolo creado exitosamente! Conectar con Django para guardar en BD');
+            alert('Protocolo creado exitosamente!\n\nConectar con Django para guardar en BD');
         });
 
         // Save draft
         document.getElementById('saveDraft').addEventListener('click', function() {
-            showNotification('Borrador guardado. Conectar con Django');
+            alert('Borrador guardado\nConectar con Django');
         });
     </script>
 </body>
