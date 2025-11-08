@@ -2,35 +2,58 @@
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Usuario
+from django.contrib.auth.models import User
+from .models import PerfilUsuario
 
-class UsuarioAdmin(UserAdmin):
-    """
-    Configuración personalizada para el modelo Usuario en el admin de Django.
-    """
-    model = Usuario
-    list_display = ('email', 'username', 'nombre', 'apellidos', 'rol', 'estado', 'is_staff')
-    list_filter = ('rol', 'estado', 'is_staff', 'is_superuser', 'is_active')
-    
-    # Campos que se mostrarán en el formulario de edición
-    fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Información Personal', {'fields': ('nombre', 'apellidos', 'telefono', 'foto_perfil')}),
-        ('Información Laboral', {'fields': ('id_empleado', 'departamento', 'cargo', 'fecha_ingreso')}),
-        ('Permisos y Estado', {'fields': ('rol', 'estado', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Fechas Importantes', {'fields': ('last_login', 'date_joined')}),
-    )
-    
-    # Campos para el formulario de creación de usuario
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'username', 'nombre', 'apellidos', 'id_empleado', 'password', 'password2'),
-        }),
-    )
-    
-    search_fields = ('email', 'username', 'nombre', 'apellidos', 'id_empleado')
-    ordering = ('email',)
+# Unregister the default User admin
+admin.site.unregister(User)
 
-# Registra tu modelo personalizado
-admin.site.register(Usuario, UsuarioAdmin)
+class PerfilUsuarioInline(admin.StackedInline):
+    """
+    Configuración para mostrar el PerfilUsuario dentro del admin de User.
+    """
+    model = PerfilUsuario
+    can_delete = False
+    verbose_name_plural = 'Perfil de Usuario'
+    fk_name = 'user'
+
+class CustomUserAdmin(UserAdmin):
+    """
+    Configuración personalizada para el admin de User,
+    incluyendo el PerfilUsuarioInline.
+    """
+    inlines = (PerfilUsuarioInline, )
+    list_display = (
+        'username', 
+        'email', 
+        'first_name', 
+        'last_name', 
+        'is_staff', 
+        'get_rol', 
+        'get_activo'
+    )
+    list_select_related = ('perfil',)
+
+    @admin.display(description='Rol', ordering='perfil__rol')
+    def get_rol(self, obj):
+        if hasattr(obj, 'perfil'):
+            return obj.perfil.get_rol_display()
+        return None
+
+    @admin.display(description='Estado', ordering='perfil__activo', boolean=True)
+    def get_activo(self, obj):
+        if hasattr(obj, 'perfil'):
+            return obj.perfil.activo
+        return False
+
+# Register the User model with our custom admin
+admin.site.register(User, CustomUserAdmin)
+
+# Opcional: Registrar otros modelos para verlos en el admin
+from .models import Protocolo, Organismo, Equipo, Categoria, AuditoriaLog
+
+admin.site.register(Protocolo)
+admin.site.register(Organismo)
+admin.site.register(Equipo)
+admin.site.register(Categoria)
+admin.site.register(AuditoriaLog)

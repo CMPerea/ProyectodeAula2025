@@ -35,8 +35,11 @@ def login_view(request):
                         messages.error(request, 'Tu cuenta está desactivada. Contacta al administrador.')
                         return render(request, 'login.html', {'form': form})
                 except PerfilUsuario.DoesNotExist:
-                    messages.error(request, 'Error en el perfil de usuario.')
-                    return render(request, 'login.html', {'form': form})
+                    # Esto ocurre si un superusuario no tiene perfil.
+                    # Permitir login de superusuario sin perfil.
+                    if not user.is_superuser:
+                        messages.error(request, 'Error en el perfil de usuario.')
+                        return render(request, 'login.html', {'form': form})
                 
                 login(request, user)
                 
@@ -96,7 +99,8 @@ def homepage_view(request):
 @login_required
 def protocolo_view(request):
     """Vista de protocolos"""
-    return render(request, 'protocolo.html')
+    # Corregido para apuntar a la lista de protocolos
+    return render(request, 'gestión de protocolos/lista_protocolos.html')
 
 
 # ============= GESTIÓN DE USUARIOS =============
@@ -136,7 +140,8 @@ def listar_usuarios(request):
         'estado_filter': estado_filter,
     }
     
-    return render(request, 'usuarios/listar_usuarios.html', context)
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de usuarios/lista_usuarios.html', context)
 
 
 @login_required
@@ -202,7 +207,8 @@ Equipo EM&B''',
     else:
         form = CrearUsuarioForm()
     
-    return render(request, 'usuarios/crear_usuario.html', {'form': form})
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de usuarios/registrar_usuario.html', {'form': form})
 
 
 @login_required
@@ -264,7 +270,8 @@ Equipo EM&B''',
         }
         form = EditarUsuarioForm(instance=usuario, initial=initial)
     
-    return render(request, 'usuarios/editar_usuario.html', {
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de usuarios/editar_usuario.html', {
         'form': form,
         'usuario': usuario
     })
@@ -330,7 +337,8 @@ def eliminar_usuario(request, user_id):
         messages.success(request, f'Usuario {username} eliminado exitosamente.')
         return redirect('listar_usuarios')
     
-    return render(request, 'usuarios/confirmar_eliminar_usuario.html', {'usuario': usuario})
+    # Esta plantilla no la has subido, asegúrate de que exista en 'gestión de usuarios/'
+    return render(request, 'gestión de usuarios/confirmar_eliminar_usuario.html', {'usuario': usuario})
 
 
 @login_required
@@ -357,7 +365,8 @@ def mi_perfil(request):
         }
         form = EditarPerfilForm(instance=request.user, initial=initial)
     
-    return render(request, 'usuarios/mi_perfil.html', {'form': form, 'perfil': perfil})
+    # Esta plantilla no la has subido, asegúrate de que exista en 'gestión de usuarios/'
+    return render(request, 'gestión de usuarios/mi_perfil.html', {'form': form, 'perfil': perfil})
 
 
 @login_required
@@ -387,23 +396,28 @@ def cambiar_contrasena(request):
     else:
         form = PasswordChangeForm(request.user)
     
-    return render(request, 'usuarios/cambiar_contrasena.html', {'form': form})
+    # Esta plantilla no la has subido, asegúrate de que exista en 'gestión de usuarios/'
+    return render(request, 'gestión de usuarios/cambiar_contrasena.html', {'form': form})
 
 
 # ============= GESTIÓN DE ORGANISMOS =============
 
 @login_required
 def crear_organismo_view(request):
-    return render(request, 'crear_organismo.html')
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de organismos/crear_organismo.html')
 
 @login_required
 def editar_organismo_view(request, organismo_id):
-    return render(request, 'editar_organismo.html', {'organismo_id': organismo_id})
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de organismos/editar_organismo.html', {'organismo_id': organismo_id})
 
 @login_required
 def listar_organismos_view(request):
-    return render(request, 'lista_organismos.html')    
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de organismos/lista_organismos.html')    
 
 @login_required
 def detalle_organismo_view(request, organismo_id):
-    return render(request, 'detalle_organismo.html', {'organismo_id': organismo_id})
+    # Ruta de plantilla corregida
+    return render(request, 'gestión de organismos/detalle_organismo.html', {'organismo_id': organismo_id})

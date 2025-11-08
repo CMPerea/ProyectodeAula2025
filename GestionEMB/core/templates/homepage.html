@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    {% load static %}
-
-    <meta charset="UTF-8">
+    {% load static %} <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema EM&B</title>
+    
     <style>
         * {
             margin: 0;
@@ -482,7 +481,6 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -497,7 +495,7 @@
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">General</div>
-                <a href="#" class="nav-item active">
+                <a href="{% url 'dashboard' %}" class="nav-item active">
                     <span class="nav-item-icon">🏠</span>
                     <span class="nav-item-text">Dashboard</span>
                 </a>
@@ -505,11 +503,11 @@
 
             <div class="nav-section">
                 <div class="nav-section-title">Gestión</div>
-                <a href="#" class="nav-item">
+                <a href="{% url 'protocolo' %}" class="nav-item">
                     <span class="nav-item-icon">📋</span>
                     <span class="nav-item-text">Protocolos</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="{% url 'listar_organismos' %}" class="nav-item">
                     <span class="nav-item-icon">🦠</span>
                     <span class="nav-item-text">Organismos</span>
                 </a>
@@ -525,7 +523,7 @@
 
             <div class="nav-section">
                 <div class="nav-section-title">Administración</div>
-                <a href="#" class="nav-item">
+                <a href="{% url 'listar_usuarios' %}" class="nav-item">
                     <span class="nav-item-icon">👥</span>
                     <span class="nav-item-text">Usuarios</span>
                 </a>
@@ -541,20 +539,24 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="user-profile">
-                <div class="user-avatar">AD</div>
-                <div class="user-info">
-                    <div class="user-name">Administrador</div>
-                    <div class="user-role">Admin</div>
+            <a href="{% url 'mi_perfil' %}" style="text-decoration: none;">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        {{ request.user.first_name.0|upper }}{{ request.user.last_name.0|upper }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                        <div class="user-role">{{ request.user.perfil.get_rol_display }}</div>
+                    </div>
                 </div>
-                <span>⋮</span>
-            </div>
+            </a>
+            <a href="{% url 'logout' %}" style="text-decoration: none; color: #555; font-size: 0.9rem; padding: 0.5rem 1.5rem; display: block;">
+                Cerrar Sesión
+            </a>
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
-        <!-- Top Bar -->
         <div class="top-bar">
             <div class="page-title">
                 <h1>Dashboard</h1>
@@ -571,18 +573,26 @@
             </div>
         </div>
 
-        <!-- Content Area -->
         <div class="content-area">
-            <!-- Welcome Section -->
+            
+            {% if messages %}
+            <div style="margin-bottom: 1.5rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="padding: 1rem; border-radius: 8px; background: #d1fae5; color: #065f46;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="welcome-section">
                 <div class="welcome-text">
-                    <h2>¡Bienvenido de vuelta, Administrador!</h2>
+                    <h2>¡Bienvenido de vuelta, {{ request.user.first_name|default:request.user.username }}!</h2>
                     <p>Gestiona el sistema de protocolos del laboratorio EM&B</p>
                 </div>
                 <div class="welcome-icon">👋</div>
             </div>
 
-            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">
@@ -617,47 +627,45 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
             <div class="quick-actions">
                 <div class="section-header">
                     <h2 class="section-title">Acciones Rápidas</h2>
                 </div>
                 <div class="actions-grid">
-                    <button class="action-btn">
+                    <a href="{% url 'protocolo' %}" class="action-btn" style="text-decoration: none;">
                         <div class="action-btn-icon">➕</div>
                         <div class="action-btn-text">
                             <h4>Nuevo Protocolo</h4>
                             <p>Crear protocolo de investigación</p>
                         </div>
-                    </button>
+                    </a>
 
-                    <button class="action-btn">
+                    <a href="{% url 'crear_organismo' %}" class="action-btn" style="text-decoration: none;">
                         <div class="action-btn-icon">🧬</div>
                         <div class="action-btn-text">
                             <h4>Registrar Organismo</h4>
                             <p>Añadir nuevo microorganismo</p>
                         </div>
-                    </button>
+                    </a>
 
-                    <button class="action-btn">
+                    <a href="#" class="action-btn" style="text-decoration: none;">
                         <div class="action-btn-icon">🔧</div>
                         <div class="action-btn-text">
                             <h4>Agregar Equipo</h4>
                             <p>Registrar equipo de laboratorio</p>
                         </div>
-                    </button>
+                    </a>
 
-                    <button class="action-btn">
+                    <a href="{% url 'crear_usuario' %}" class="action-btn" style="text-decoration: none;">
                         <div class="action-btn-icon">👤</div>
                         <div class="action-btn-text">
                             <h4>Crear Usuario</h4>
                             <p>Añadir nuevo investigador</p>
                         </div>
-                    </button>
+                    </a>
                 </div>
             </div>
 
-            <!-- Recent Activity -->
             <div class="recent-activity">
                 <div class="section-header">
                     <h2 class="section-title">Actividad Reciente</h2>
@@ -699,31 +707,5 @@
             </div>
         </div>
     </main>
-
-    <script>
-        // Navegación activa
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Acciones rápidas
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const action = this.querySelector('h4').textContent;
-                alert(`Funcionalidad: ${action}\nConectar con Django`);
-            });
-        });
-
-        // Búsqueda
-        document.querySelector('.search-box input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                alert('Búsqueda: ' + this.value + '\nConectar con Django');
-            }
-        });
-    </script>
 </body>
 </html>

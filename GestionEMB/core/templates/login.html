@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    {% load static %}
-
-    <meta charset="UTF-8">
+    {% load static %}  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Sistema EM&B</title>
+    
     <style>
         * {
             margin: 0;
@@ -87,17 +86,19 @@
         }
 
         .login-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1.8rem;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
-        .login-icon svg {
-            width: 100%;
-            height: 100%;
+        .login-icon img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(44,83,100,0.10);
+            object-fit: cover;
         }
 
         .login-title {
@@ -117,7 +118,6 @@
             font-size: 0.95rem;
             font-weight: 400;
         }
-
 
         /* Divider */
         .divider-text {
@@ -246,6 +246,19 @@
             text-decoration: underline;
         }
 
+        /* Mensajes de error */
+        .messages {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .login-wrapper {
@@ -261,21 +274,7 @@
                 padding: 3rem 2rem;
             }
         }
-                .login-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-icon img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(44,83,100,0.10);
-            object-fit: cover;
-        }
+
         @media (max-width: 480px) {
             body {
                 padding: 1rem;
@@ -293,10 +292,9 @@
 </head>
 <body>
     <div class="login-wrapper">
-        <!-- Left Section -->
         <div class="left-section">
             <div class="illustration-area">
-                <img src="/GestionEMB/core/templates/static/img/Humaaans - Research.png" alt="Illustration">
+                <img src="{% static 'img/Humaaans - Research.png' %}" alt="Illustration">
             </div>
             <div class="left-text">
                 <h2>Centralizando el conocimiento científico.</h2>
@@ -304,56 +302,61 @@
             </div>
         </div>
 
-        <!-- Right Section -->
         <div class="right-section">
             <div class="login-icon">
-                <img src="/GestionEMB/core/templates/static/img/196806-200.png" alt="Login Icon">
+                <img src="{% static 'img/196806-200.png' %}" alt="Login Icon">
             </div>
 
             <div class="login-title">
-                <h1>Login to your Account</h1>
-                <p>See what is going on with your business</p>
+                <h1>Bienvenido</h1>
+                <p>Inicia sesión para acceder al sistema</p>
             </div>
 
-            <div class="divider-text">or Sign in with Email</div>
+            <form class="login-form" method="POST">
+                
+                {% csrf_token %}
 
-            <form class="login-form">
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    <ul class="messages">
+                        {% for error in form.non_field_errors %}
+                        <li class="alert alert-error">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+
                 <div class="input-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="" required>
+                    <label for="username">Usuario</label>
+                    <input type="text" name="username" id="username" placeholder="Tu nombre de usuario" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="" required>
+                    <label for="password">Contraseña</label>
+                    <input type="password" name="password" id="password" placeholder="Tu contraseña" required>
                 </div>
 
                 <div class="form-row">
                     <div class="checkbox-wrapper">
-                        <input type="checkbox" id="remember">
-                        <label for="remember">Remember Me</label>
+                        <input type="checkbox" name="remember_me" id="remember">
+                        <label for="remember">Recordarme</label>
                     </div>
-                    <a href="#" class="forgot-link">Forgot Password?</a>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <button type="submit" class="submit-button">Login</button>
+                <button type="submit" class="submit-button">Iniciar Sesión</button>
             </form>
-
-            <div class="register-section">
-                <p>Not Registered Yet? <a href="#">Create an account</a></p>
+            
             </div>
-        </div>
     </div>
-
-    <script>
-
-        document.querySelector('.login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            console.log('Login:', { email, password });
-            alert('Conectar con backend Django');
-        });
-    </script>
 </body>
 </html>
