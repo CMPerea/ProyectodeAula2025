@@ -35,5 +35,5 @@ urlpatterns = [
     ###Gestion de Protocolos
     
     path('protocolo/', views.protocolo_view, name='protocolo'),
-    path('listaProtocolos/', views.listaProtocolos, name= 'listaProcolos')
+    path('listaProtocolos/', views.listaProtocolos, name= 'listaProtocolos')
 ]

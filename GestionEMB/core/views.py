@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
 from .models import Protocolo
+from .forms import ProtocoloForm
 
 def login_view(request):
     if request.method == 'POST':
@@ -34,5 +35,14 @@ def listaProtocolos(request):
     return render(request, "lista_protocolos.html", {'protocolos': protocolos})
 
 def protocolo_view(request):
-    return render(request, 'protocolo.html')
+    if request.method == 'POST':
+        formulario = ProtocoloForm(request.POST, request.FILES)
+        if formulario.is_valid():
+            formulario.save()
+            messages.succes(request, 'yap')
+            return redirect('listaProtocolos') 
+            
+    else:
+        formulario = ProtocoloForm()
+    return render(request, 'protocolo.html', {'formulario': formulario})
 

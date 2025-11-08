@@ -508,7 +508,7 @@
             </div>
         </div>
         <a href="#" class="nav-item">🏠 Dashboard</a>
-        <a href="{% url 'listaProcolos' %}" class="nav-item active">📋 Protocolos</a>
+        <a href="{% url 'listaProtocolos' %}" class="nav-item active">📋 Protocolos</a>
         <a href="#" class="nav-item">🦠 Organismos</a>
         <a href="#" class="nav-item">⚙️ Equipos</a>
     </aside>
@@ -520,7 +520,7 @@
             <div class="breadcrumb">
                 <a href="#">Dashboard</a>
                 <span>/</span>
-                <a href="{% url 'listaProcolos' %}">Protocolos</a>
+                <a href="{% url 'listaProtocolos' %}">Protocolos</a>
                 <span>/</span>
                 <span>Nuevo Protocolo</span>
             </div>
@@ -536,7 +536,8 @@
         <div class="form-container">
             <!-- ARIA live region for notifications -->
             <div id="notification" aria-live="polite" style="margin-bottom:1rem;color:#ef4444;font-weight:600;"></div>
-            <form id="protocolForm" class="form-card">
+            <form id="protocolForm" class="form-card" method="POST", enctype = "multipart/form-data", action = "{% url 'protocolo' %}">
+
                 <!-- Información Básica -->
                 <div class="form-section">
                     <h2 class="section-title">
@@ -571,7 +572,7 @@
                             <label class="form-label">
                                 Categoría <span class="required">*</span>
                             </label>
-                            <select class="form-select" id="categoria" name="categoria_id" required>
+                            <select class="form-select" id="categoria" name="categoria" required>
                                 <option value="">Seleccione una categoría</option>
                                 <option value="1">Biocontrol</option>
                                 <option value="2">Preparación de Medios</option>
@@ -587,7 +588,7 @@
                             <label class="form-label">
                                 Autor <span class="required">*</span>
                             </label>
-                            <select class="form-select" id="autor" name="autor_id" required>
+                            <select class="form-select" id="autor" name="autor" required>
                                 <option value="">Seleccione el autor</option>
                                 <option value="1">Carlos Perea</option>
                                 <option value="2">Gabriela Ramírez</option>
@@ -732,6 +733,18 @@
                         <button type="submit" class="btn btn-primary">
                             ✓ Crear Protocolo
                         </button>
+                        {% if formulario.errors %}
+                            <div style="color:#b91c1c; margin-top:1rem;">
+                                {{ formulario.non_field_errors }}
+                                <ul>
+                                {% for field in formulario %}
+                                    {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </form>

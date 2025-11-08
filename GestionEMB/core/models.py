@@ -105,7 +105,7 @@ class Organismo(models.Model):
 
 class Protocolo(models.Model):
     id_protocolo = models.AutoField(primary_key=True)
-    titulo = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=100, verbose_name = 'Título del Protocolo')
     descripcion = models.TextField(blank=True, null=True)
     procedimiento = models.TextField()
     materiales = models.TextField(blank=True, null=True)
