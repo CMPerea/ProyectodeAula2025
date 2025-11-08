@@ -1,7 +1,7 @@
 from django.shortcuts import render
-
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
+from .models import Protocolo
 
 def login_view(request):
     if request.method == 'POST':
@@ -16,18 +16,23 @@ def login_view(request):
     return render(request, 'login.html')
 
 def homepage_view(request):
-    return render(request, 'homepage.html')
+    return render(request, 'lista_protocolos.html')
 
-def protocolo_view(request):
-    return render(request, 'protocolo.html')
 ###Gestion de Organismos
 def crear_organismo_view(request):
     return render(request, 'crear_organismo.html')
 def editar_organismo_view(request, organismo_id):
     return render(request, 'editar_organismo.html', {'organismo_id': organismo_id})
 def listar_organismos_view(request):
-    return render(request, 'listar_organismos.html')    
+    return render(request, 'lista_organismos.html')    
 def detalle_organismo_view(request, organismo_id):
     return render(request, 'detalle_organismo.html', {'organismo_id': organismo_id})
 ###Gestion de Protocolos
+
+def listaProtocolos(request):
+    protocolos = Protocolo.objects.all()
+    return render(request, "lista_protocolos.html", {'protocolos': protocolos})
+
+def protocolo_view(request):
+    return render(request, 'protocolo.html')
 

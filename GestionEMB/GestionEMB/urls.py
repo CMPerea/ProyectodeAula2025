@@ -17,12 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from core import views
+from django.urls import include
 
 urlpatterns = [
+    path('homepage/', views.homepage_view, name='homepage'),
     path('admin/', admin.site.urls),
+    path('', include('core.urls')),
     path('', views.login_view, name='login'),
     path('dashboard/', views.homepage_view, name='dashboard'),
-    path('protocolo/', views.protocolo_view, name='protocolo'),
+
     ##Gestion de Organismos
     path('crear_organismo/', views.crear_organismo_view, name='crear_organismo'),
     path('editar_organismo/<int:organismo_id>/', views.editar_organismo_view, name='editar_organismo'),
@@ -30,5 +33,7 @@ urlpatterns = [
     path('detalle_organismo/<int:organismo_id>/', views.detalle_organismo_view, name='detalle_organismo'),  
     
     ###Gestion de Protocolos
-
+    
+    path('protocolo/', views.protocolo_view, name='protocolo'),
+    path('listaProtocolos/', views.listaProtocolos, name= 'listaProcolos')
 ]
