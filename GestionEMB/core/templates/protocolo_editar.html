@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Editar Protocolo - {{ protocolo.titulo }}</title>
+    <style>
+        /* Reuse minimal styles to match app */
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background:#f5f5f5; color:#525252; }
+        .sidebar { position:fixed; left:0; top:0; width:260px; height:100vh; background:#fff; padding:2rem 0; box-shadow:2px 0 10px rgba(0,0,0,0.05); }
+        .main-content { margin-left:260px; min-height:100vh; }
+        .top-bar { background:#fff; padding:1.5rem 2rem; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+        .form-container { max-width:1000px; margin:2rem auto; padding:0 2rem 2rem; }
+        .card { background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .form-group { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.75rem; }
+        .form-input, .form-select, .form-textarea { padding:0.75rem 1rem; border:1.5px solid #e5e7eb; border-radius:8px; }
+        .form-textarea { min-height:120px; }
+        .file-list { margin-top:0.5rem; }
+        .btn { padding:0.75rem 1.25rem; border-radius:8px; border:none; cursor:pointer; }
+        .btn-primary { background:#0077B6; color:#fff; }
+        .btn-secondary { background:#f3f4f6; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div style="padding:0 1.5rem; display:flex; align-items:center; gap:0.75rem; margin-bottom:2rem;">
+            <div style="width:40px;height:40px;background:#0077B6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;">🔬</div>
+            <div><h2 style="color:#0077B6; font-size:1.2rem;">EM&B</h2></div>
+        </div>
+        <nav style="display:flex;flex-direction:column; gap:0.5rem; padding:0 1.5rem;">
+            <a href="{% url 'listaProcolos' %}" style="text-decoration:none;color:#525252;">📋 Protocolos</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div><strong>Editar protocolo</strong></div>
+                <div><a href="{% url 'protocolo_detalle' protocolo.id_protocolo %}">↩ Volver</a></div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="card">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Título <span style="color:#ef4444">*</span></label>
+                            <input class="form-input" type="text" name="titulo" value="{{ protocolo.titulo }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select class="form-select" name="categoria_id">
+                                <option value="">--</option>
+                                {% for c in categorias %}
+                                <option value="{{ c.id_categoria }}" {% if protocolo.categoria and protocolo.categoria.id_categoria == c.id_categoria %}selected{% endif %}>{{ c.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Autor</label>
+                            <select class="form-select" name="autor_id">
+                                <option value="">--</option>
+                                {% for u in usuarios %}
+                                <option value="{{ u.id_usuario }}" {% if protocolo.autor and protocolo.autor.id_usuario == u.id_usuario %}selected{% endif %}>{{ u.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select class="form-select" name="estado">
+                                <option value="borrador" {% if protocolo.estado == 'borrador' %}selected{% endif %}>Borrador</option>
+                                <option value="en revisión" {% if protocolo.estado == 'en revisión' %}selected{% endif %}>En revisión</option>
+                                <option value="validado" {% if protocolo.estado == 'validado' %}selected{% endif %}>Validado</option>
+                                <option value="obsoleto" {% if protocolo.estado == 'obsoleto' %}selected{% endif %}>Obsoleto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea class="form-textarea" name="descripcion">{{ protocolo.descripcion }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Procedimiento</label>
+                        <textarea class="form-textarea" name="procedimiento">{{ protocolo.procedimiento }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Materiales</label>
+                        <textarea class="form-textarea" name="materiales">{{ protocolo.materiales }}</textarea>
+                    </div>
+
+                    <h3>Archivos existentes</h3>
+                    <ul class="file-list">
+                        {% for a in archivos %}
+                        <li>
+                            <a href="{{ a.archivo.url }}" target="_blank">{{ a.nombre_original|default:a.archivo.name }}</a>
+                            - <a href="{% url 'protocolo_archivo_eliminar' protocolo.id_protocolo a.id_archivo %}" onclick="return confirm('Eliminar archivo?')">Eliminar</a>
+                        </li>
+                        {% empty %}
+                        <li>No hay archivos.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="form-group">
+                        <label>Añadir archivos</label>
+                        <input type="file" name="adjuntos" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                    </div>
+
+                    <div style="display:flex; gap:1rem; margin-top:1rem;">
+                        <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                        <a class="btn btn-secondary" href="{% url 'protocolo_detalle' protocolo.id_protocolo %}">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

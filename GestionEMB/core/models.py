@@ -105,7 +105,7 @@ class Organismo(models.Model):
 
 class Protocolo(models.Model):
     id_protocolo = models.AutoField(primary_key=True)
-    titulo = models.CharField(max_length=100, verbose_name = 'Título del Protocolo')
+    titulo = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
     procedimiento = models.TextField()
     materiales = models.TextField(blank=True, null=True)
@@ -158,3 +158,21 @@ class Usuario(models.Model):
     class Meta:
         managed = False
         db_table = 'usuario'
+
+
+class ProtocoloArchivo(models.Model):
+    """Adjuntos asociados a un Protocolo.
+
+    Este modelo almacena los archivos subidos por el usuario y una FK al
+    protocolo correspondiente. Se deja `managed = True` para permitir crear
+    la tabla mediante migraciones de Django.
+    """
+    id_archivo = models.AutoField(primary_key=True)
+    protocolo = models.ForeignKey(Protocolo, models.CASCADE)
+    archivo = models.FileField(upload_to='protocolos/%Y/%m/%d/')
+    nombre_original = models.CharField(max_length=255, blank=True, null=True)
+    fecha_subida = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'protocolo_archivo'

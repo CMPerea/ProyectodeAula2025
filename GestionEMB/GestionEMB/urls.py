@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from core import views
 from django.urls import include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('homepage/', views.homepage_view, name='homepage'),
@@ -35,5 +37,8 @@ urlpatterns = [
     ###Gestion de Protocolos
     
     path('protocolo/', views.protocolo_view, name='protocolo'),
-    path('listaProtocolos/', views.listaProtocolos, name= 'listaProtocolos')
+    path('listaProtocolos/', views.listaProtocolos, name= 'listaProcolos')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

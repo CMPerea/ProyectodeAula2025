@@ -229,6 +229,12 @@
             background: #FFFFFF;
         }
 
+        /* Error field visual */
+        .error-field {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.06);
+        }
+
         .form-input:focus,
         .form-select:focus,
         .form-textarea:focus {
@@ -508,7 +514,7 @@
             </div>
         </div>
         <a href="#" class="nav-item">🏠 Dashboard</a>
-        <a href="{% url 'listaProtocolos' %}" class="nav-item active">📋 Protocolos</a>
+        <a href="{% url 'listaProcolos' %}" class="nav-item active">📋 Protocolos</a>
         <a href="#" class="nav-item">🦠 Organismos</a>
         <a href="#" class="nav-item">⚙️ Equipos</a>
     </aside>
@@ -520,7 +526,7 @@
             <div class="breadcrumb">
                 <a href="#">Dashboard</a>
                 <span>/</span>
-                <a href="{% url 'listaProtocolos' %}">Protocolos</a>
+                <a href="{% url 'listaProcolos' %}">Protocolos</a>
                 <span>/</span>
                 <span>Nuevo Protocolo</span>
             </div>
@@ -536,8 +542,34 @@
         <div class="form-container">
             <!-- ARIA live region for notifications -->
             <div id="notification" aria-live="polite" style="margin-bottom:1rem;color:#ef4444;font-weight:600;"></div>
-            <form id="protocolForm" class="form-card" method="POST", enctype = "multipart/form-data", action = "{% url 'protocolo' %}">
-
+            <form id="protocolForm" class="form-card" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if error %}
+                <div style="padding:12px;margin:12px;border-radius:6px;background:#fee2e2;color:#991b1b;">{{ error }}</div>
+                {% endif %}
+                {% if success %}
+                <div style="padding:12px;margin:12px;border-radius:6px;background:#ecfdf5;color:#065f46;">{{ success }}</div>
+                {% endif %}
+                {% if file_errors %}
+                <div style="padding:12px;margin:12px;border-radius:6px;background:#fff4f4;color:#991b1b;">
+                    <strong>Errores al guardar archivos:</strong>
+                    <ul>
+                        {% for e in file_errors %}
+                        <li>{{ e }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if saved_files %}
+                <div style="padding:12px;margin:12px;border-radius:6px;background:#f0fdf4;color:#064e3b;">
+                    <strong>Archivos guardados:</strong>
+                    <ul>
+                        {% for s in saved_files %}
+                        <li>{{ s }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
                 <!-- Información Básica -->
                 <div class="form-section">
                     <h2 class="section-title">
@@ -556,12 +588,13 @@
                             </label>
                             <input 
                                 type="text" 
-                                class="form-input" 
+                                class="form-input {% if 'titulo' in missing %}error-field{% endif %}" 
                                 id="titulo"
                                 name="titulo"
                                 maxlength="100"
                                 placeholder="Ej: Aislamiento de Actinobacterias del Cacao"
                                 required
+                                value="{{ titulo|default:'' }}"
                             >
                             <div class="char-counter">
                                 <span id="tituloCounter">0</span> / 100 caracteres
@@ -572,29 +605,34 @@
                             <label class="form-label">
                                 Categoría <span class="required">*</span>
                             </label>
-                            <select class="form-select" id="categoria" name="categoria" required>
+                            <select class="form-select {% if 'categoria' in missing %}error-field{% endif %}" id="categoria" name="categoria_id" required>
                                 <option value="">Seleccione una categoría</option>
-                                <option value="1">Biocontrol</option>
-                                <option value="2">Preparación de Medios</option>
-                                <option value="3">Aislamiento Microbiano</option>
-                                <option value="4">Análisis Morfológico</option>
-                                <option value="5">Extracción de ADN</option>
-                                <option value="6">Fermentación</option>
-                                <option value="7">Otros</option>
+                                {% for c in categorias %}
+                                    <option value="{{ c.id_categoria }}" {% if categoria_val == c.id_categoria|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
+                                {% empty %}
+                                    <option value="">No hay categorías disponibles</option>
+                                {% endfor %}
                             </select>
+                            {% if 'categoria' in missing %}
+                                <div class="form-hint" style="color:#b91c1c;">La categoría es obligatoria.</div>
+                            {% endif %}
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">
                                 Autor <span class="required">*</span>
                             </label>
-                            <select class="form-select" id="autor" name="autor" required>
+                            <select class="form-select {% if 'autor' in missing %}error-field{% endif %}" id="autor" name="autor_id" required>
                                 <option value="">Seleccione el autor</option>
-                                <option value="1">Carlos Perea</option>
-                                <option value="2">Gabriela Ramírez</option>
-                                <option value="3">Sura Rueda</option>
-                                <option value="4">Pilar Lizarazo</option>
+                                {% for u in usuarios %}
+                                    <option value="{{ u.id_usuario }}" {% if autor_val == u.id_usuario|stringformat:"s" %}selected{% endif %}>{{ u.nombre }}</option>
+                                {% empty %}
+                                    <option value="">No hay autores disponibles</option>
+                                {% endfor %}
                             </select>
+                            {% if 'autor' in missing %}
+                                <div class="form-hint" style="color:#b91c1c;">El autor es obligatorio.</div>
+                            {% endif %}
                         </div>
 
                         <div class="form-group full-width">
@@ -606,7 +644,7 @@
                                 id="descripcion"
                                 name="descripcion"
                                 placeholder="Breve descripción del protocolo, objetivos y aplicaciones..."
-                            ></textarea>
+                            >{{ descripcion|default:'' }}</textarea>
                             <p class="form-hint">Proporcione un resumen del protocolo y su propósito</p>
                         </div>
                     </div>
@@ -625,12 +663,12 @@
                                 Procedimiento Detallado <span class="required">*</span>
                             </label>
                             <textarea 
-                                class="form-textarea large" 
+                                class="form-textarea large {% if 'procedimiento' in missing %}error-field{% endif %}" 
                                 id="procedimiento"
                                 name="procedimiento"
                                 placeholder="Describa paso a paso el procedimiento completo...&#10;&#10;1. Primer paso...&#10;2. Segundo paso...&#10;3. Tercer paso..."
                                 required
-                            ></textarea>
+                            >{{ procedimiento|default:'' }}</textarea>
                             <p class="form-hint">Incluya todos los pasos necesarios de forma clara y ordenada</p>
                         </div>
 
@@ -643,7 +681,7 @@
                                 id="materiales"
                                 name="materiales"
                                 placeholder="Liste todos los materiales, equipos y reactivos necesarios...&#10;&#10;- Material 1&#10;- Material 2&#10;- Reactivo 1"
-                            ></textarea>
+                            >{{ materiales|default:'' }}</textarea>
                             <p class="form-hint">Especifique cantidades, concentraciones y especificaciones técnicas</p>
                         </div>
                     </div>
@@ -662,7 +700,7 @@
                         </label>
                         <div class="status-selector">
                             <div class="status-option">
-                                <input type="radio" id="borrador" name="estado" value="borrador" checked>
+                                <input type="radio" id="borrador" name="estado" value="borrador" {% if not estado_val or estado_val == 'borrador' %}checked{% endif %}>
                                 <label for="borrador" class="status-label">
                                     <div class="status-icon">📝</div>
                                     <div class="status-name">Borrador</div>
@@ -671,7 +709,7 @@
                             </div>
 
                             <div class="status-option">
-                                <input type="radio" id="revision" name="estado" value="en revisión">
+                                <input type="radio" id="revision" name="estado" value="en revisión" {% if estado_val == 'en revisión' %}checked{% endif %}>
                                 <label for="revision" class="status-label">
                                     <div class="status-icon">🔍</div>
                                     <div class="status-name">En Revisión</div>
@@ -680,7 +718,7 @@
                             </div>
 
                             <div class="status-option">
-                                <input type="radio" id="validado" name="estado" value="validado">
+                                <input type="radio" id="validado" name="estado" value="validado" {% if estado_val == 'validado' %}checked{% endif %}>
                                 <label for="validado" class="status-label">
                                     <div class="status-icon">✅</div>
                                     <div class="status-name">Validado</div>
@@ -689,7 +727,7 @@
                             </div>
 
                             <div class="status-option">
-                                <input type="radio" id="obsoleto" name="estado" value="obsoleto">
+                                <input type="radio" id="obsoleto" name="estado" value="obsoleto" {% if estado_val == 'obsoleto' %}checked{% endif %}>
                                 <label for="obsoleto" class="status-label">
                                     <div class="status-icon">⚠️</div>
                                     <div class="status-name">Obsoleto</div>
@@ -715,7 +753,7 @@
                                 <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
                                 <p>PDF, Word, Excel, Imágenes (Máx. 10MB por archivo)</p>
                             </div>
-                            <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                            <input type="file" id="fileInput" name="adjuntos" class="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
                         </div>
                         <div class="file-list" id="fileList"></div>
                     </div>
@@ -733,18 +771,6 @@
                         <button type="submit" class="btn btn-primary">
                             ✓ Crear Protocolo
                         </button>
-                        {% if formulario.errors %}
-                            <div style="color:#b91c1c; margin-top:1rem;">
-                                {{ formulario.non_field_errors }}
-                                <ul>
-                                {% for field in formulario %}
-                                    {% for error in field.errors %}
-                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                                    {% endfor %}
-                                {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
                     </div>
                 </div>
             </form>
@@ -837,22 +863,49 @@
         }
 
         // Form submission
+        // Validación cliente: evitar el envío si faltan campos obligatorios.
         document.getElementById('protocolForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                titulo: document.getElementById('titulo').value,
-                descripcion: document.getElementById('descripcion').value,
-                procedimiento: document.getElementById('procedimiento').value,
-                materiales: document.getElementById('materiales').value,
-                estado: document.querySelector('input[name="estado"]:checked').value,
-                autor_id: document.getElementById('autor').value,
-                categoria_id: document.getElementById('categoria').value,
-                archivos: uploadedFiles.map(f => f.name)
-            };
+            // Clear previous error highlights
+            document.querySelectorAll('.error-field').forEach(el => el.classList.remove('error-field'));
 
-            console.log('Datos del protocolo:', formData);
-            showNotification('Protocolo creado exitosamente! Conectar con Django para guardar en BD');
+            const missing = [];
+            const tituloVal = document.getElementById('titulo').value.trim();
+            const procedimientoVal = document.getElementById('procedimiento').value.trim();
+            const estadoVal = document.querySelector('input[name="estado"]:checked');
+            const autorVal = document.getElementById('autor').value;
+            const categoriaVal = document.getElementById('categoria').value;
+
+            if (!tituloVal) missing.push('titulo');
+            if (!procedimientoVal) missing.push('procedimiento');
+            if (!estadoVal) missing.push('estado');
+            if (!autorVal) missing.push('autor');
+            if (!categoriaVal) missing.push('categoria');
+
+            if (missing.length > 0) {
+                e.preventDefault(); // evitar envío al servidor
+                // marcar los campos faltantes
+                if (missing.includes('titulo')) document.getElementById('titulo').classList.add('error-field');
+                if (missing.includes('procedimiento')) document.getElementById('procedimiento').classList.add('error-field');
+                if (missing.includes('autor')) document.getElementById('autor').classList.add('error-field');
+                if (missing.includes('categoria')) document.getElementById('categoria').classList.add('error-field');
+                if (missing.includes('estado')) {
+                    // marcar visualmente el grupo de estados
+                    document.querySelectorAll('.status-label').forEach(el => el.classList.add('error-field'));
+                }
+
+                // Mapear claves a etiquetas amigables para el usuario
+                const labels = { titulo: 'Título', procedimiento: 'Procedimiento', estado: 'Estado', autor: 'Autor', categoria: 'Categoría' };
+                const friendly = missing.map(k => labels[k] || k);
+                showNotification('Faltan campos obligatorios: ' + friendly.join(', '));
+                // No limpiamos el formulario: simplemente mostramos el error y el usuario corrige
+                return false;
+            }
+
+            // sincronizar DataTransfer con uploadedFiles para que el input file contenga todos los archivos
+            const dt = new DataTransfer();
+            uploadedFiles.forEach(f => dt.items.add(f));
+            fileInput.files = dt.files;
+            // el navegador continuará con el envío nativo
         });
 
         // Save draft

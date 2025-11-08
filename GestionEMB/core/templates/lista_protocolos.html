@@ -605,199 +605,33 @@
                         </tr>
                     </thead>
                     <tbody id="protocolsTableBody">
-
-                        <!-- Protocolo AUTO -->
-                        {% for protocolo in protocolos %}
-                        <tr onclick="verDetalle(1)">
-                            <td> 
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title"> {{ protocolo.titulo }} </div>
-                                    <div class="protocol-description"> {{ protocolo.descripcion }} </div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge"> {{ protocolo.categoria.nombre }} </span></td>
-                            <td> {{ protocolo.autor.nombre }} </td>
-                            <td><span class="status-badge validado"> {{ protocolo.estado }} </span></td>
-                            <td> {{ protocolo.fecha_creacion }} </td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(1)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(1)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(1)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                        <!-- Protocolo 1 -->
-                        <tr onclick="verDetalle(1)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Aislamiento de Actinobacterias del Cacao</div>
-                                    <div class="protocol-description">Protocolo para aislamiento y cultivo de actinobacterias asociadas a plantaciones de cacao</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Aislamiento</span></td>
-                            <td>Carlos Perea</td>
-                            <td><span class="status-badge validado">Validado</span></td>
-                            <td>15/08/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(1)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(1)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(1)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 2 -->
-                        <tr onclick="verDetalle(2)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Preparación de Medio PDA</div>
-                                    <div class="protocol-description">Procedimiento estandarizado para la preparación de medio Papa Dextrosa Agar</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Medios</span></td>
-                            <td>Gabriela Ramírez</td>
-                            <td><span class="status-badge validado">Validado</span></td>
-                            <td>10/08/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(2)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(2)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(2)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 3 -->
-                        <tr onclick="verDetalle(3)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Evaluación de Antagonismo in vitro</div>
-                                    <div class="protocol-description">Protocolo para evaluar actividad antagónica de microorganismos contra patógenos</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Biocontrol</span></td>
-                            <td>Sura Rueda</td>
-                            <td><span class="status-badge revision">En Revisión</span></td>
-                            <td>01/09/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(3)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(3)">✏️</button>
-                                    <button class="btn-action validate" title="Validar" onclick="event.stopPropagation(); validarProtocolo(3)">✓</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(3)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 4 -->
-                        <tr onclick="verDetalle(4)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Extracción de ADN por CTAB</div>
-                                    <div class="protocol-description">Método de extracción de ADN genómico utilizando buffer CTAB</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">ADN</span></td>
-                            <td>Carlos Perea</td>
-                            <td><span class="status-badge validado">Validado</span></td>
-                            <td>20/07/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(4)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(4)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(4)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 5 -->
-                        <tr onclick="verDetalle(5)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Tinción de Gram Modificada</div>
-                                    <div class="protocol-description">Técnica de tinción diferencial para caracterización bacteriana</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Morfológico</span></td>
-                            <td>Gabriela Ramírez</td>
-                            <td><span class="status-badge borrador">Borrador</span></td>
-                            <td>05/09/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(5)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(5)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(5)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 6 -->
-                        <tr onclick="verDetalle(6)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Fermentación de Cacao en Laboratorio</div>
-                                    <div class="protocol-description">Protocolo controlado para fermentación de mazorcas de cacao a escala de laboratorio</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Fermentación</span></td>
-                            <td>Pilar Lizarazo</td>
-                            <td><span class="status-badge validado">Validado</span></td>
-                            <td>30/06/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(6)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(6)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(6)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 7 -->
-                        <tr onclick="verDetalle(7)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Cultivo de Hongos Filamentosos</div>
-                                    <div class="protocol-description">Procedimiento para cultivo y mantenimiento de hongos filamentosos</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Aislamiento</span></td>
-                            <td>Sura Rueda</td>
-                            <td><span class="status-badge revision">En Revisión</span></td>
-                            <td>28/08/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(7)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(7)">✏️</button>
-                                    <button class="btn-action validate" title="Validar" onclick="event.stopPropagation(); validarProtocolo(7)">✓</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(7)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Protocolo 8 -->
-                        <tr onclick="verDetalle(8)">
-                            <td>
-                                <div class="protocol-title-cell">
-                                    <div class="protocol-title">Preparación de Medios Selectivos</div>
-                                    <div class="protocol-description">Protocolos para medios selectivos ISP2, ISP4 y medios con antibióticos</div>
-                                </div>
-                            </td>
-                            <td><span class="category-badge">Medios</span></td>
-                            <td>Carlos Perea</td>
-                            <td><span class="status-badge obsoleto">Obsoleto</span></td>
-                            <td>15/03/2024</td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-action view" title="Ver detalles" onclick="event.stopPropagation(); verDetalle(8)">👁️</button>
-                                    <button class="btn-action edit" title="Editar" onclick="event.stopPropagation(); editarProtocolo(8)">✏️</button>
-                                    <button class="btn-action delete" title="Eliminar" onclick="event.stopPropagation(); eliminarProtocolo(8)">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
+                        {% if protocolos %}
+                            {% for protocolo in protocolos %}
+                            <tr onclick="location.href='{% url 'protocolo_detalle' protocolo.id_protocolo %}'">
+                                <td>
+                                    <div class="protocol-title-cell">
+                                        <div class="protocol-title">{{ protocolo.titulo }}</div>
+                                        <div class="protocol-description">{{ protocolo.descripcion }}</div>
+                                    </div>
+                                </td>
+                                <td><span class="category-badge">{{ protocolo.categoria.nombre }}</span></td>
+                                <td>{{ protocolo.autor.nombre }}</td>
+                                <td><span class="status-badge {{ protocolo.estado|lower|cut:" " }}">{{ protocolo.estado }}</span></td>
+                                <td>{{ protocolo.fecha_creacion }}</td>
+                                <td>
+                                    <div class="actions-cell">
+                                        <a href="{% url 'protocolo_detalle' protocolo.id_protocolo %}" class="btn-action view" title="Ver detalles">👁️</a>
+                                        <a href="{% url 'protocolo_editar' protocolo.id_protocolo %}" class="btn-action edit" title="Editar">✏️</a>
+                                        <a href="{% url 'protocolo_eliminar' protocolo.id_protocolo %}" class="btn-action delete" title="Eliminar" onclick="return confirm('¿Eliminar este protocolo?')">🗑️</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="empty-state">No se encontraron protocolos.</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
 

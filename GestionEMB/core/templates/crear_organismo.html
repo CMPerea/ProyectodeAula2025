@@ -532,7 +532,14 @@
 
         <!-- Form Container -->
         <div class="form-container">
-            <form id="organismForm" class="form-card">
+            <form id="organismForm" class="form-card" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if error %}
+                <div style="padding:12px;margin:12px;border-radius:6px;background:#fee2e2;color:#991b1b;">{{ error }}</div>
+                {% endif %}
+                {% if success %}
+                <div style="padding:12px;margin:12px;border-radius:6px;background:#ecfdf5;color:#065f46;">{{ success }}</div>
+                {% endif %}
                 <!-- Tipo de Organismo -->
                 <div class="form-section">
                     <h2 class="section-title">

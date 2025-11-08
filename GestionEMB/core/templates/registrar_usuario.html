@@ -623,7 +623,8 @@
 
         <!-- Form Container -->
         <div class="form-container">
-            <form id="userForm" class="form-card">
+            <form id="userForm" class="form-card" method="post" action="{% url 'registrar_usuario' %}" enctype="multipart/form-data">
+                {% csrf_token %}
                 <!-- Información Personal -->
                 <div class="form-section">
                     <h2 class="section-title">
@@ -710,7 +711,7 @@
                                     <h3>Arrastra una imagen aquí o haz clic para seleccionar</h3>
                                     <p>JPG, PNG (Máx. 5MB, Recomendado: 300x300px)</p>
                                 </div>
-                                <input type="file" id="fileInput" class="file-input" accept=".jpg,.jpeg,.png">
+                                <input type="file" id="fileInput" name="foto_perfil" class="file-input" accept=".jpg,.jpeg,.png">
                             </div>
                             <div class="file-list" id="fileList"></div>
                         </div>
@@ -1155,31 +1156,12 @@
 
         // Form submission
         document.getElementById('userForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
+            // Client-side validation before allowing native submit
             if (!validateForm()) {
+                e.preventDefault();
                 return;
             }
-            
-            const formData = {
-                nombre: document.getElementById('nombre').value,
-                apellidos: document.getElementById('apellidos').value,
-                email: document.getElementById('email').value,
-                telefono: document.getElementById('telefono').value,
-                id_empleado: document.getElementById('idEmpleado').value,
-                departamento_id: document.getElementById('departamento').value,
-                cargo: document.getElementById('cargo').value,
-                fecha_ingreso: document.getElementById('fechaIngreso').value,
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
-                rol: document.querySelector('input[name="rol"]:checked').value,
-                estado: document.querySelector('input[name="estado"]:checked').value,
-                permisos: Array.from(document.querySelectorAll('input[name="permisos"]:checked')).map(cb => cb.value),
-                foto_perfil: uploadedFiles.length > 0 ? uploadedFiles[0].name : null
-            };
-
-            console.log('Datos del usuario:', formData);
-            alert('Usuario creado exitosamente!\n\nConectar con Django para guardar en BD');
+            // Let the form submit natively (including file upload and CSRF token)
         });
 
         // Save draft
